@@ -12,6 +12,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
+    private static TranslationFragment translationFragment;
+    private static FavoritesFragment favoritesFragment;
+    private static HistoryFragment historyFragment;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -20,13 +23,16 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    setFragment(new TranslationFragment(), true);
+                    if(translationFragment == null) translationFragment = new TranslationFragment();
+                    setFragment(translationFragment, true);
                     return true;
                 case R.id.navigation_favorites:
-                    setFragment(new FavoritesFragment(), true);
+                    if(favoritesFragment == null) favoritesFragment = new FavoritesFragment();
+                    setFragment(favoritesFragment, true);
                     return true;
                 case R.id.navigation_history:
-                    setFragment(new HistoryFragment(), true);
+                    if(historyFragment == null) historyFragment = new HistoryFragment();
+                    setFragment(historyFragment, true);
                     return true;
             }
             return false;
@@ -42,7 +48,8 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        setFragment(new TranslationFragment(), false);
+        translationFragment = new TranslationFragment();
+        setFragment(translationFragment, false);
     }
 
     private void setFragment(Fragment fragment, boolean is_replace){

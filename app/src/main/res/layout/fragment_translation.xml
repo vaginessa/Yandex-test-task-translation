@@ -12,6 +12,7 @@
         android:layout_height="154dp"
         android:layout_marginTop="@dimen/toolbar_height"
         android:ems="10"
+        android:gravity="top"
         android:inputType="textMultiLine" />
 
     <TextView
