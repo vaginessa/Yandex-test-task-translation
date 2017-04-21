@@ -3,9 +3,12 @@ package com.alesk.translation;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 
 /**
@@ -50,8 +53,23 @@ public class TranslationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_translation, container, false);
 
-        return inflater.inflate(R.layout.fragment_translation, container, false);
+        final EditText to_translate = ((EditText)view.findViewById(R.id.to_translate));
+        to_translate.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+               // ((TextView)view.findViewById(R.id.translated_text)).setText(to_translate.getText());
+            }
+        });
+
+        return view;
     }
 
     @Override
