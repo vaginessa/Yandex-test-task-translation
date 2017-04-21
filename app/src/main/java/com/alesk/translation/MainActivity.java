@@ -1,5 +1,8 @@
 package com.alesk.translation;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -50,5 +53,28 @@ public class MainActivity extends AppCompatActivity {
             f_transaction.add(R.id.content, fragment);
         }
         f_transaction.commit();
+    }
+
+    public static boolean hasConnection(final Context context)
+    {
+        try {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            if (wifiInfo != null && wifiInfo.isConnected()) {
+                return true;
+            }
+            wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            if (wifiInfo != null && wifiInfo.isConnected()) {
+                return true;
+            }
+            wifiInfo = cm.getActiveNetworkInfo();
+            if (wifiInfo != null && wifiInfo.isConnected()) {
+                return true;
+            }
+            return false;
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        return false;
     }
 }
