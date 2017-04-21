@@ -17,11 +17,13 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    setFragment(new TranslationFragment());
+                    setFragment(new TranslationFragment(), true);
                     return true;
                 case R.id.navigation_favorites:
+                    setFragment(new FavoritesFragment(), true);
                     return true;
                 case R.id.navigation_history:
+                    setFragment(new HistoryFragment(), true);
                     return true;
             }
             return false;
@@ -37,12 +39,16 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        setFragment(new TranslationFragment());
+        setFragment(new TranslationFragment(), false);
     }
 
-    private void setFragment(Fragment fragment){
+    private void setFragment(Fragment fragment, boolean is_replace){
         FragmentTransaction f_transaction = getSupportFragmentManager().beginTransaction();
-        f_transaction.add(R.id.content, fragment);
+        if(is_replace) {
+            f_transaction.replace(R.id.content, fragment);
+        }else {
+            f_transaction.add(R.id.content, fragment);
+        }
         f_transaction.commit();
     }
 }
