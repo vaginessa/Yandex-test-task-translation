@@ -1,6 +1,7 @@
 package com.alesk.translation;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -31,16 +33,22 @@ import java.util.ArrayList;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class TranslationFragment extends Fragment {
     private static TextView translated_text;
     private static EditText to_translate;
     private static Spinner lang_from;
     private static Spinner lang_to;
+    private static ArrayList<String> langs_from = new ArrayList<>();
     private static ArrayList<String> langs = new ArrayList<>();
     private static ArrayList<String> code_langs = new ArrayList<>();
     private static String translated_string;
     private static String code;
     private static String lang;
+    private static SharedPreferences sPref;
+    private static ArrayAdapter<String> lang_from_adapter;
+    private static ArrayAdapter<String> lang_to_adapter;
 
     public TranslationFragment() {}
 
@@ -62,10 +70,33 @@ public class TranslationFragment extends Fragment {
         ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar)view.findViewById(R.id.toolbar));
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        set_lang_from_adapter(view);
-        set_lang_to_adapter(view);
-
         new GetLangsTask().execute();
+
+        set_lang_from_adapter(view);
+        lang_from.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                new TranslateTask().execute();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        set_lang_to_adapter(view);
+        lang_to.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                new TranslateTask().execute();
+                sPref = getActivity().getPreferences(MODE_PRIVATE);
+                SharedPreferences.Editor ed = sPref.edit();
+                ed.putInt("Last_lang", position);
+                ed.commit();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
         translated_text = (TextView) view.findViewById(R.id.translated_text);
         if(!MainActivity.is_connect) translated_text.setText(getString(R.string.no_connection));
@@ -158,34 +189,32 @@ public class TranslationFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        langs.clear();
+        langs_from.clear();
     }
 
     private void set_lang_from_adapter(View v){
         lang_from = (Spinner) v.findViewById(R.id.lang_from);
 
-        ArrayList<String> langs_from = new ArrayList<>();
-        langs_from.addAll(langs);
-        langs_from.add(0, "Автоматически");
+        lang_from_adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_item, langs_from);
+        lang_from_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_item, langs_from);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        lang_from.setAdapter(adapter);
+        lang_from.setAdapter(lang_from_adapter);
     }
 
     private void set_lang_to_adapter(View v){
         lang_to = (Spinner) v.findViewById(R.id.lang_to);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_item, langs);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        lang_to_adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_item, langs);
+        lang_to_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        lang_to.setAdapter(adapter);
+        lang_to.setAdapter(lang_to_adapter);
     }
 
     private static String getLangs(){
         String baseURL = "https://translate.yandex.net/api/v1.5/tr.json/getLangs?";
         String API_key = "trnsl.1.1.20170421T155302Z.72626cd8e3e77068.a727cb302d6818222e7afcfa360f4d51efe2f25d";
-        String ui = lang_from.getSelectedItemPosition()-1 < 0 ? "ru" : code_langs.get(lang_from.getSelectedItemPosition()-1);
+        String ui = "ru";
         return request(baseURL+"key="+API_key+"&ui="+ui);
     }
 
@@ -230,6 +259,12 @@ public class TranslationFragment extends Fragment {
                 JSONObject jobj = (JSONObject)((JSONObject) parser.parse(result)).get("langs");
 
                 langs.addAll(jobj.values());
+                langs_from.addAll(langs);
+                langs_from.add(0, "Автоматически");
+                lang_from_adapter.notifyDataSetChanged();
+                lang_to_adapter.notifyDataSetChanged();
+                sPref = getActivity().getPreferences(MODE_PRIVATE);
+                lang_to.setSelection(sPref.getInt("Last_lang", 0));
                 code_langs.addAll(jobj.keySet());
             }catch(ParseException e){
                 System.out.println(e.getMessage());
