@@ -101,18 +101,24 @@ public class TranslationFragment extends Fragment {
 
     private class TranslateTask extends AsyncTask<Void, Void, Void> {
         String result;
+        boolean is_empty;
 
-        protected void onPreExecute(){}
+        protected void onPreExecute(){is_empty = to_translate.getText().toString().isEmpty();}
 
         @Override
         protected Void doInBackground(Void... params) {
+            if(!is_empty)
             result = translate();
             return null;
         }
 
         protected void onPostExecute(Void r){
-            parseJSON(result);
-            translated_text.setText(translated_string);
+            if(!is_empty) {
+                parseJSON(result);
+                translated_text.setText(translated_string);
+            }else{
+                translated_text.setText("");
+            }
         }
     }
 
@@ -128,10 +134,7 @@ public class TranslationFragment extends Fragment {
         }catch(ParseException e){
             System.out.println(e.getMessage());
             e.printStackTrace();
-        }catch(Exception e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
+        }catch(Exception e){}
     }
 
     @Override
