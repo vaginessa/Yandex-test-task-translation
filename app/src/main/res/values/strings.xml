@@ -4,6 +4,7 @@
     <string name="title_favorites">Избранные</string>
     <string name="title_history">История</string>
     <string name="no_connection">Нет подключения к интернету =(</string>
+    <string name="API_KEY"></string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
