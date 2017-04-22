@@ -37,7 +37,7 @@ public class TranslationFragment extends Fragment {
     private static Spinner lang_from;
     private static Spinner lang_to;
     private static ArrayList<String> langs = new ArrayList<>();
-    private static String[] code_langs;
+    private static ArrayList<String> code_langs = new ArrayList<>();
     private static String translated_string;
     private static String code;
     private static String lang;
@@ -93,9 +93,9 @@ public class TranslationFragment extends Fragment {
             String API_key = "trnsl.1.1.20170421T155302Z.72626cd8e3e77068.a727cb302d6818222e7afcfa360f4d51efe2f25d";
             String lang;
             if(lang_from.getSelectedItem().toString().equals("Автоматически")) {
-                lang = code_langs[lang_to.getSelectedItemPosition()];
+                lang = code_langs.get(lang_to.getSelectedItemPosition());
             }else{
-                lang = code_langs[lang_from.getSelectedItemPosition()-1]+"-"+code_langs[lang_to.getSelectedItemPosition()];
+                lang = code_langs.get(lang_from.getSelectedItemPosition()-1)+"-"+code_langs.get(lang_to.getSelectedItemPosition());
             }
             String text = URLEncoder.encode(to_translate.getText().toString(), "UTF-8");
             return request(baseURL + "key=" + API_key + "&text=" + text + "&lang=" + lang);
@@ -125,7 +125,7 @@ public class TranslationFragment extends Fragment {
 
         protected void onPostExecute(Void r){
             if(!is_empty && MainActivity.is_connect) {
-                parseJSON(result);
+                parseJSON_translate(result);
                 translated_text.setText(translated_string);
             }else if(is_empty){
                 translated_text.setText("");
@@ -135,7 +135,7 @@ public class TranslationFragment extends Fragment {
         }
     }
 
-    private static void parseJSON(String s){
+    private static void parseJSON_translate(String s){
         try {
             JSONParser parser = new JSONParser();
 
@@ -182,11 +182,11 @@ public class TranslationFragment extends Fragment {
         lang_to.setAdapter(adapter);
     }
 
-    private static void getLangs(){
+    private static String getLangs(){
         String baseURL = "https://translate.yandex.net/api/v1.5/tr.json/getLangs?";
         String API_key = "trnsl.1.1.20170421T155302Z.72626cd8e3e77068.a727cb302d6818222e7afcfa360f4d51efe2f25d";
-        String ui = lang_from.getSelectedItemPosition()-1 < 0 ? "ru" : code_langs[lang_from.getSelectedItemPosition()-1];
-        System.out.println(request(baseURL+"key="+API_key+"&ui="+ui));
+        String ui = lang_from.getSelectedItemPosition()-1 < 0 ? "ru" : code_langs.get(lang_from.getSelectedItemPosition()-1);
+        return request(baseURL+"key="+API_key+"&ui="+ui);
     }
 
     private static String request(String url_string){
@@ -212,35 +212,29 @@ public class TranslationFragment extends Fragment {
         return null;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     private class GetLangsTask extends AsyncTask<Void, Void, Void> {
+        String result;
+
         protected void onPreExecute(){}
 
         @Override
         protected Void doInBackground(Void... params) {
             if(MainActivity.is_connect)
-                getLangs();
+                result = getLangs();
             return null;
         }
 
         protected void onPostExecute(Void r){
+            try {
+                JSONParser parser = new JSONParser();
+                JSONObject jobj = (JSONObject)((JSONObject) parser.parse(result)).get("langs");
 
+                langs.addAll(jobj.values());
+                code_langs.addAll(jobj.keySet());
+            }catch(ParseException e){
+                System.out.println(e.getMessage());
+                e.printStackTrace();
+            }catch(Exception e){}
         }
     }
-
-
-
-
 }
