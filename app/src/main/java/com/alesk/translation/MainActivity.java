@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
     private static TranslationFragment translationFragment;
     private static FavoritesFragment favoritesFragment;
     private static HistoryFragment historyFragment;
+    public static boolean is_connect;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        hasConnection(this);
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -62,26 +64,29 @@ public class MainActivity extends AppCompatActivity {
         f_transaction.commit();
     }
 
-    public static boolean hasConnection(final Context context)
+    public static void hasConnection(final Context context)
     {
         try {
             ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
             if (wifiInfo != null && wifiInfo.isConnected()) {
-                return true;
+                is_connect = true;
+                return;
             }
             wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
             if (wifiInfo != null && wifiInfo.isConnected()) {
-                return true;
+                is_connect = true;
+                return;
             }
             wifiInfo = cm.getActiveNetworkInfo();
             if (wifiInfo != null && wifiInfo.isConnected()) {
-                return true;
+                is_connect = true;
+                return;
             }
-            return false;
+            is_connect = false;
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
-        return false;
+        is_connect = false;
     }
 }

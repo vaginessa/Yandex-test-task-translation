@@ -51,6 +51,7 @@ public class TranslationFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_translation, container, false);
 
         translated_text = (TextView) view.findViewById(R.id.translated_text);
+        if(!MainActivity.is_connect) translated_text.setText(getString(R.string.no_connection));
         to_translate = ((EditText)view.findViewById(R.id.to_translate));
 
         to_translate.addTextChangedListener(new TextWatcher() {
@@ -103,21 +104,26 @@ public class TranslationFragment extends Fragment {
         String result;
         boolean is_empty;
 
-        protected void onPreExecute(){is_empty = to_translate.getText().toString().isEmpty();}
+        protected void onPreExecute(){
+            MainActivity.hasConnection(getActivity());
+            is_empty = to_translate.getText().toString().isEmpty();
+        }
 
         @Override
         protected Void doInBackground(Void... params) {
-            if(!is_empty)
+            if(!is_empty && MainActivity.is_connect)
             result = translate();
             return null;
         }
 
         protected void onPostExecute(Void r){
-            if(!is_empty) {
+            if(!is_empty && MainActivity.is_connect) {
                 parseJSON(result);
                 translated_text.setText(translated_string);
-            }else{
+            }else if(is_empty){
                 translated_text.setText("");
+            }else{
+                translated_text.setText(getString(R.string.no_connection));
             }
         }
     }
