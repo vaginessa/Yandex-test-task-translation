@@ -35,7 +35,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="bottom"
         android:layout_marginBottom="20dp"
-        android:layout_marginRight="40dp"
+        android:layout_marginRight="50dp"
         android:layout_marginTop="210dp">
 
         <LinearLayout
@@ -62,6 +62,7 @@
         android:ems="10"
         android:gravity="top"
         android:inputType="textMultiLine"
+        android:imeOptions="actionGo"
         android:textSize="20sp" />
 
     <android.support.v7.widget.Toolbar
@@ -100,12 +101,11 @@
 
     <com.like.LikeButton
         android:id="@+id/like_button"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_gravity="right"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="210dp"
-        app:icon_size="33dp"
+        android:layout_marginTop="200dp"
+        app:icon_size="25dp"
         app:icon_type="star" />
 
 </FrameLayout>

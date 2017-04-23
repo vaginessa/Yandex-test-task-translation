@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <TextView
+            android:id="@+id/translate_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="50dp"
+            android:maxLines="1"
+            android:textColor="@android:color/background_dark"
+            android:textSize="10pt" />
+
+        <TextView
+            android:id="@+id/translated_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/background_dark"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="50dp"
+            android:maxLines="1"
+            android:layout_marginTop="28dp"
+            android:textSize="9pt" />
+
+        <TextView
+            android:id="@+id/lang_lang"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="55dp"
+            android:textSize="8pt" />
+
+    <com.like.LikeButton
+        android:id="@+id/like_button"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="right|center_vertical"
+        app:icon_size="30dp"
+        app:icon_type="star" />
+
+</FrameLayout>

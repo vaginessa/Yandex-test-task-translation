@@ -9,13 +9,16 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
-    private static TranslationFragment translationFragment;
+    public static TranslationFragment translationFragment;
     private static FavoritesFragment favoritesFragment;
     private static HistoryFragment historyFragment;
     public static boolean is_connect;
+    public static DBHelper dbHelper;
+    public static BottomNavigationView navigation;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -36,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
                     setFragment(historyFragment, true);
                     return true;
             }
+
+            updateNavigationBarState(item.getItemId());
+
             return false;
         }
 
@@ -46,8 +52,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         hasConnection(this);
+        dbHelper = new DBHelper(this);
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         translationFragment = new TranslationFragment();
@@ -62,6 +69,11 @@ public class MainActivity extends AppCompatActivity {
             f_transaction.add(R.id.content, fragment);
         }
         f_transaction.commit();
+    }
+
+    @Override
+    public void onBackPressed(){
+        finish();
     }
 
     public static void hasConnection(final Context context)
@@ -88,5 +100,14 @@ public class MainActivity extends AppCompatActivity {
             System.out.println(e.getMessage());
         }
         is_connect = false;
+    }
+
+    private void updateNavigationBarState(int actionId){
+        Menu menu = navigation.getMenu();
+
+        for (int i = 0, size = menu.size(); i < size; i++) {
+            MenuItem item = menu.getItem(i);
+            item.setChecked(item.getItemId() == actionId);
+        }
     }
 }

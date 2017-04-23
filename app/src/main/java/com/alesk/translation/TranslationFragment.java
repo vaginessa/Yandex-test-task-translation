@@ -1,8 +1,10 @@
 package com.alesk.translation;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,6 +91,7 @@ public class TranslationFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 new TranslateTask().execute();
+                addToHistory();
             }
 
             @Override
@@ -103,6 +107,7 @@ public class TranslationFragment extends Fragment {
                 SharedPreferences.Editor ed = sPref.edit();
                 ed.putInt("Last_lang", position);
                 ed.commit();
+                addToHistory();
             }
 
             @Override
@@ -126,6 +131,19 @@ public class TranslationFragment extends Fragment {
             }
         });
 
+        to_translate.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(!to_translate.getText().toString().isEmpty()) {
+                    try {
+                        addToHistory();
+                    } catch (Exception e) {
+                    }
+                }
+                return false;
+            }
+        });
+
         res = (TextView) view.findViewById(R.id.resource);
         rights = (TextView) view.findViewById(R.id.rights);
         res.setOnClickListener(new View.OnClickListener() {
@@ -144,6 +162,7 @@ public class TranslationFragment extends Fragment {
                 if(tmp > 0) {
                     lang_from.setSelection(lang_to.getSelectedItemPosition()+1);
                     lang_to.setSelection(tmp-1);
+                    addToHistory();
                 }
             }
         });
@@ -162,6 +181,31 @@ public class TranslationFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void addToHistory(){
+        SQLiteDatabase database = MainActivity.dbHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(DBHelper.KEY_TO_TRANSLATE, to_translate.getText().toString());
+        contentValues.put(DBHelper.KEY_TRANSLATED, translated_text.getText().toString());
+
+        int index_from = lang_from.getSelectedItemPosition();
+        int index_to = lang_to.getSelectedItemPosition();
+
+        String lng;
+        if(index_from > 0) lng = code_langs.get(index_from-1)+"-"+code_langs.get(index_to);
+        else lng = lang;
+
+        contentValues.put(DBHelper.KEY_LANG, lng);
+
+        database.insert(DBHelper.TABLE_HISTORY, null, contentValues);
+
+        HistoryFragment.translate_text.add(0, to_translate.getText().toString());
+        HistoryFragment.translated_text.add(0, translated_text.getText().toString());
+        HistoryFragment.lang_lang.add(0, lng);
+
+        MainActivity.dbHelper.close();
     }
 
     private static String translate(){
@@ -231,6 +275,18 @@ public class TranslationFragment extends Fragment {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }catch(Exception e){}
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        Bundle bundle = getArguments();
+        try {
+            lang_from.setSelection(code_langs.indexOf(bundle.getString("Lang_from"))+1);
+            lang_to.setSelection(code_langs.indexOf(bundle.getString("Lang_to")));
+            to_translate.setText(bundle.getString("To_translate"));
+            translated_text.setText(bundle.getString("Translated"));
+        }catch (Exception e){}
     }
 
     @Override
