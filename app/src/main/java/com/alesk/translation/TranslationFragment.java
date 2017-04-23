@@ -32,6 +32,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -128,6 +135,17 @@ public class TranslationFragment extends Fragment {
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse("http://translate.yandex.ru/"));
                 getContext().startActivity(i);
+            }
+        });
+
+        view.findViewById(R.id.switch_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int tmp = lang_from.getSelectedItemPosition();
+                if(tmp > 0) {
+                    lang_from.setSelection(lang_to.getSelectedItemPosition()+1);
+                    lang_to.setSelection(tmp-1);
+                }
             }
         });
 
@@ -279,19 +297,53 @@ public class TranslationFragment extends Fragment {
                 JSONObject jobj = (JSONObject)((JSONObject) parser.parse(result)).get("langs");
 
                 langs.clear();
-                langs.addAll(jobj.values());
                 langs_from.clear();
+
+                HashMap<String, String> lngs = new HashMap<>();
+
+                ArrayList<String> keys = new ArrayList<>(); keys.addAll(jobj.keySet());
+                langs.addAll(jobj.values());
+                for(int i = 0; i < keys.size(); i++){
+                    lngs.put(langs.get(i), keys.get(i));
+                }
+
+                Collections.sort(langs);
+                for(int i = 0; i < langs.size(); i++){
+                    code_langs.add(lngs.get(langs.get(i)));
+                }
+
                 langs_from.addAll(langs);
                 langs_from.add(0, "Автоматически");
+
                 lang_from_adapter.notifyDataSetChanged();
                 lang_to_adapter.notifyDataSetChanged();
                 sPref = getActivity().getPreferences(MODE_PRIVATE);
                 lang_to.setSelection(sPref.getInt("Last_lang", 0));
-                code_langs.addAll(jobj.keySet());
             }catch(ParseException e){
                 System.out.println(e.getMessage());
                 e.printStackTrace();
             }catch(Exception e){}
         }
+    }
+
+    public static <K, V extends Comparable<? super V>> Map<K, V>
+    sortByValue( Map<K, V> map )
+    {
+        List<Map.Entry<K, V>> list =
+                new LinkedList<Map.Entry<K, V>>( map.entrySet() );
+        Collections.sort( list, new Comparator<Map.Entry<K, V>>()
+        {
+            public int compare( Map.Entry<K, V> o1, Map.Entry<K, V> o2 )
+            {
+                return (o1.getValue()).compareTo( o2.getValue() );
+            }
+        } );
+
+        Map<K, V> result = new LinkedHashMap<K, V>();
+        for (Map.Entry<K, V> entry : list)
+        {
+            result.put( entry.getKey(), entry.getValue() );
+        }
+        return result;
     }
 }
