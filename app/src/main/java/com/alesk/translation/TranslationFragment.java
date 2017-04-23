@@ -49,6 +49,7 @@ public class TranslationFragment extends Fragment {
     private static SharedPreferences sPref;
     private static ArrayAdapter<String> lang_from_adapter;
     private static ArrayAdapter<String> lang_to_adapter;
+    boolean need_update;
 
     public TranslationFragment() {}
 
@@ -133,7 +134,7 @@ public class TranslationFragment extends Fragment {
         }catch(UnsupportedEncodingException e){
             System.out.println(e.getMessage());
             e.printStackTrace();
-        }
+        }catch(Exception e){}
 
         return null;
     }
@@ -143,6 +144,7 @@ public class TranslationFragment extends Fragment {
         boolean is_empty;
 
         protected void onPreExecute(){
+            if(need_update){ new GetLangsTask().execute(); need_update = false;}
             MainActivity.hasConnection(getActivity());
             is_empty = to_translate.getText().toString().isEmpty();
         }
@@ -158,10 +160,11 @@ public class TranslationFragment extends Fragment {
             if(!is_empty && MainActivity.is_connect) {
                 parseJSON_translate(result);
                 translated_text.setText(translated_string);
-            }else if(is_empty){
-                translated_text.setText("");
-            }else{
+            }else if(!MainActivity.is_connect){
+                need_update = true;
                 translated_text.setText(getString(R.string.no_connection));
+            }else{
+                translated_text.setText("");
             }
         }
     }
@@ -189,8 +192,6 @@ public class TranslationFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        langs.clear();
-        langs_from.clear();
     }
 
     private void set_lang_from_adapter(View v){
@@ -258,7 +259,9 @@ public class TranslationFragment extends Fragment {
                 JSONParser parser = new JSONParser();
                 JSONObject jobj = (JSONObject)((JSONObject) parser.parse(result)).get("langs");
 
+                langs.clear();
                 langs.addAll(jobj.values());
+                langs_from.clear();
                 langs_from.addAll(langs);
                 langs_from.add(0, "Автоматически");
                 lang_from_adapter.notifyDataSetChanged();
