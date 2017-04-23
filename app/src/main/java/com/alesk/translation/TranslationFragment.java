@@ -228,9 +228,14 @@ public class TranslationFragment extends Fragment {
         boolean is_empty;
 
         protected void onPreExecute(){
-            if(need_update){ new GetLangsTask().execute(); need_update = false;}
-            MainActivity.hasConnection(getActivity());
-            is_empty = to_translate.getText().toString().isEmpty();
+            try {
+                if (need_update) {
+                    new GetLangsTask().execute();
+                    need_update = false;
+                }
+                MainActivity.hasConnection(getActivity());
+                is_empty = to_translate.getText().toString().isEmpty();
+            }catch(Exception e){}
         }
 
         @Override
@@ -241,26 +246,28 @@ public class TranslationFragment extends Fragment {
         }
 
         protected void onPostExecute(Void r){
-            if(!is_empty && MainActivity.is_connect) {
-                parseJSON_translate(result);
-                translated_text.setText(translated_string);
-                res.setVisibility(View.VISIBLE);
-                rights.setVisibility(View.VISIBLE);
+            try {
+                if (!is_empty && MainActivity.is_connect) {
+                    parseJSON_translate(result);
+                    translated_text.setText(translated_string);
+                    res.setVisibility(View.VISIBLE);
+                    rights.setVisibility(View.VISIBLE);
 
-                sPref = getActivity().getPreferences(MODE_PRIVATE);
-                SharedPreferences.Editor ed = sPref.edit();
-                ed.putInt("Last_lang_to", lang_to.getSelectedItemPosition());
-                ed.putInt("Last_lang_from", lang_from.getSelectedItemPosition());
-                ed.putString("Last_to_translate", to_translate.getText().toString());
-                ed.commit();
-            }else if(!MainActivity.is_connect){
-                res.setVisibility(View.INVISIBLE);
-                rights.setVisibility(View.INVISIBLE);
-                need_update = true;
-                translated_text.setText(getString(R.string.no_connection));
-            }else{
-                translated_text.setText("");
-            }
+                    sPref = getActivity().getPreferences(MODE_PRIVATE);
+                    SharedPreferences.Editor ed = sPref.edit();
+                    ed.putInt("Last_lang_to", lang_to.getSelectedItemPosition());
+                    ed.putInt("Last_lang_from", lang_from.getSelectedItemPosition());
+                    ed.putString("Last_to_translate", to_translate.getText().toString());
+                    ed.commit();
+                } else if (!MainActivity.is_connect) {
+                    res.setVisibility(View.INVISIBLE);
+                    rights.setVisibility(View.INVISIBLE);
+                    need_update = true;
+                    translated_text.setText(getString(R.string.no_connection));
+                } else {
+                    translated_text.setText("");
+                }
+            }catch (Exception e){}
         }
     }
 
