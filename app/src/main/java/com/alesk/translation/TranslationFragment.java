@@ -20,6 +20,9 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.like.LikeButton;
+import com.like.OnLikeListener;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -53,9 +56,10 @@ public class TranslationFragment extends Fragment {
     private static SharedPreferences sPref;
     private static ArrayAdapter<String> lang_from_adapter;
     private static ArrayAdapter<String> lang_to_adapter;
-    boolean need_update;
-    TextView res;
-    TextView rights;
+    private static boolean need_update;
+    private static TextView res;
+    private static TextView rights;
+    private static LikeButton likeButton;
 
     public TranslationFragment() {}
 
@@ -141,6 +145,19 @@ public class TranslationFragment extends Fragment {
                     lang_from.setSelection(lang_to.getSelectedItemPosition()+1);
                     lang_to.setSelection(tmp-1);
                 }
+            }
+        });
+
+        likeButton = (LikeButton) view.findViewById(R.id.like_button);
+        likeButton.setOnLikeListener(new OnLikeListener() {
+            @Override
+            public void liked(LikeButton likeButton) {
+
+            }
+
+            @Override
+            public void unLiked(LikeButton likeButton) {
+
             }
         });
 
