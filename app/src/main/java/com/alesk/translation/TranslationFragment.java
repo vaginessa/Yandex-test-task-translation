@@ -1,7 +1,9 @@
 package com.alesk.translation;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -50,6 +52,8 @@ public class TranslationFragment extends Fragment {
     private static ArrayAdapter<String> lang_from_adapter;
     private static ArrayAdapter<String> lang_to_adapter;
     boolean need_update;
+    TextView res;
+    TextView rights;
 
     public TranslationFragment() {}
 
@@ -116,6 +120,17 @@ public class TranslationFragment extends Fragment {
             }
         });
 
+        res = (TextView) view.findViewById(R.id.resource);
+        rights = (TextView) view.findViewById(R.id.rights);
+        res.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse("http://translate.yandex.ru/"));
+                getContext().startActivity(i);
+            }
+        });
+
         return view;
     }
 
@@ -160,7 +175,11 @@ public class TranslationFragment extends Fragment {
             if(!is_empty && MainActivity.is_connect) {
                 parseJSON_translate(result);
                 translated_text.setText(translated_string);
+                res.setVisibility(View.VISIBLE);
+                rights.setVisibility(View.VISIBLE);
             }else if(!MainActivity.is_connect){
+                res.setVisibility(View.INVISIBLE);
+                rights.setVisibility(View.INVISIBLE);
                 need_update = true;
                 translated_text.setText(getString(R.string.no_connection));
             }else{
