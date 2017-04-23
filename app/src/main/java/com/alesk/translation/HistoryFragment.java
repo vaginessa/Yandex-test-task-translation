@@ -1,6 +1,7 @@
 package com.alesk.translation;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -14,6 +15,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class HistoryFragment extends Fragment {
     private static ListView listView;
@@ -45,12 +48,12 @@ public class HistoryFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Bundle bundle = new Bundle();
-                bundle.putString("To_translate", translate_text.get(position));
-                bundle.putString("Translated", translated_text.get(position));
-                bundle.putString("Lang_from", lang_lang.get(position).substring(0,2));
-                bundle.putString("Lang_to", lang_lang.get(position).substring(3,5));
-                MainActivity.translationFragment.setArguments(bundle);
+                SharedPreferences sPref = getActivity().getPreferences(MODE_PRIVATE);
+                SharedPreferences.Editor ed = sPref.edit();
+                ed.putString("Last_to_translate", translate_text.get(position));
+                ed.putInt("Last_lang_from", TranslationFragment.code_langs.indexOf(lang_lang.get(position).substring(0,2))+1);
+                ed.putInt("Last_lang_to", TranslationFragment.code_langs.indexOf(lang_lang.get(position).substring(3,5)));
+                ed.commit();
 
                 FragmentTransaction f_transaction = getActivity().getSupportFragmentManager().beginTransaction();
                 f_transaction.replace(R.id.content, MainActivity.translationFragment);

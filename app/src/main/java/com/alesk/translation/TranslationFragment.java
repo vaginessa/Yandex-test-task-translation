@@ -51,7 +51,7 @@ public class TranslationFragment extends Fragment {
     private static Spinner lang_to;
     private static ArrayList<String> langs_from = new ArrayList<>();
     private static ArrayList<String> langs = new ArrayList<>();
-    private static ArrayList<String> code_langs = new ArrayList<>();
+    public static ArrayList<String> code_langs = new ArrayList<>();
     private static String translated_string;
     private static String code;
     private static String lang;
@@ -80,8 +80,8 @@ public class TranslationFragment extends Fragment {
                              Bundle savedInstanceState){
         final View view = inflater.inflate(R.layout.fragment_translation, container, false);
 
-        ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar)view.findViewById(R.id.toolbar));
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+        ((AppCompatActivity) getActivity()).setSupportActionBar((Toolbar) view.findViewById(R.id.toolbar));
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         new GetLangsTask().execute();
 
@@ -94,7 +94,7 @@ public class TranslationFragment extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
-        });
+            });
 
         set_lang_to_adapter(view);
         lang_to.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -112,9 +112,9 @@ public class TranslationFragment extends Fragment {
         });
 
         translated_text = (TextView) view.findViewById(R.id.translated_text);
-        if(!MainActivity.is_connect) translated_text.setText(getString(R.string.no_connection));
-        to_translate = ((EditText)view.findViewById(R.id.to_translate));
-
+        if (!MainActivity.is_connect)
+            translated_text.setText(getString(R.string.no_connection));
+        to_translate = ((EditText) view.findViewById(R.id.to_translate));
         to_translate.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -124,31 +124,31 @@ public class TranslationFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                new TranslateTask().execute();
-            }
+                    new TranslateTask().execute();
+                }
         });
 
         res = (TextView) view.findViewById(R.id.resource);
         rights = (TextView) view.findViewById(R.id.rights);
         res.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse("http://translate.yandex.ru/"));
-                getContext().startActivity(i);
-            }
-        });
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse("http://translate.yandex.ru/"));
+                    getContext().startActivity(i);
+                }
+            });
 
         view.findViewById(R.id.switch_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int tmp = lang_from.getSelectedItemPosition();
-                if(tmp > 0) {
-                    lang_from.setSelection(lang_to.getSelectedItemPosition()+1);
-                    lang_to.setSelection(tmp-1);
+                @Override
+                public void onClick(View v) {
+                    int tmp = lang_from.getSelectedItemPosition();
+                    if (tmp > 0) {
+                        lang_from.setSelection(lang_to.getSelectedItemPosition() + 1);
+                        lang_to.setSelection(tmp - 1);
+                    }
                 }
-            }
-        });
+            });
 
         likeButton = (LikeButton) view.findViewById(R.id.like_button);
         likeButton.setOnLikeListener(new OnLikeListener() {
@@ -289,19 +289,11 @@ public class TranslationFragment extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
-        Bundle bundle = getArguments();
 
         sPref = getActivity().getPreferences(MODE_PRIVATE);
         lang_from.setSelection(sPref.getInt("Last_lang_from", 0));
         lang_to.setSelection(sPref.getInt("Last_lang_to", 0));
         to_translate.setText(sPref.getString("Last_to_translate", ""));
-
-        try {
-            lang_from.setSelection(code_langs.indexOf(bundle.getString("Lang_from"))+1);
-            lang_to.setSelection(code_langs.indexOf(bundle.getString("Lang_to")));
-            to_translate.setText(bundle.getString("To_translate"));
-            translated_text.setText(bundle.getString("Translated"));
-        }catch (Exception e){}
     }
 
     @Override
@@ -401,7 +393,7 @@ public class TranslationFragment extends Fragment {
                 lang_from_adapter.notifyDataSetChanged();
                 lang_to_adapter.notifyDataSetChanged();
                 sPref = getActivity().getPreferences(MODE_PRIVATE);
-                lang_to.setSelection(sPref.getInt("Last_lang", 0));
+                lang_to.setSelection(sPref.getInt("Last_lang_to", 0));
             }catch(ParseException e){
                 System.out.println(e.getMessage());
                 e.printStackTrace();
