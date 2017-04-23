@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    if(translationFragment == null) translationFragment = new TranslationFragment();
                     setFragment(translationFragment, true);
                     return true;
                 case R.id.navigation_favorites:
