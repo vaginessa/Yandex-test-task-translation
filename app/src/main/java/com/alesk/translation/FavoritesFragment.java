@@ -1,66 +1,93 @@
 package com.alesk.translation;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
+import java.util.ArrayList;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * to handle interaction events.
- * Use the {@link FavoritesFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import static android.content.Context.MODE_PRIVATE;
+
 public class FavoritesFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static ListView listView;
+    private static ListAdapter adapter;
+    public static ArrayList<String> translate_text = new ArrayList<>();
+    public static ArrayList<String> translated_text = new ArrayList<>();
+    public static ArrayList<String> lang_lang = new ArrayList<>();
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    public FavoritesFragment() {}
 
-    public FavoritesFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FavoritesFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static FavoritesFragment newInstance(String param1, String param2) {
+    public static FavoritesFragment newInstance() {
         FavoritesFragment fragment = new FavoritesFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        loadFavorites();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_favorites, container, false);
+        listView = (ListView) view.findViewById(R.id.favorites_list);
+        adapter = new ListAdapter(getActivity(), translate_text, translated_text, lang_lang);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                SharedPreferences sPref = getActivity().getPreferences(MODE_PRIVATE);
+                SharedPreferences.Editor ed = sPref.edit();
+                ed.putString("Last_to_translate", translate_text.get(position));
+                ed.putInt("Last_lang_from", TranslationFragment.code_langs.indexOf(lang_lang.get(position).substring(0,2))+1);
+                ed.putInt("Last_lang_to", TranslationFragment.code_langs.indexOf(lang_lang.get(position).substring(3,5)));
+                ed.commit();
 
-        return inflater.inflate(R.layout.fragment_favorites, container, false);
+                FragmentTransaction f_transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                f_transaction.replace(R.id.content, MainActivity.translationFragment);
+                f_transaction.commit();
+
+                Menu menu = MainActivity.navigation.getMenu();
+                menu.getItem(0).setChecked(true);
+                menu.getItem(2).setChecked(false);
+            }
+        });
+
+        return view;
+    }
+
+    private static void loadFavorites(){
+        SQLiteDatabase database = MainActivity.dbHelper.getWritableDatabase();
+        Cursor cursor = database.query(DBHelper.TABLE_FAVORITES,null,null,null,null,null,null);
+        int to_index = cursor.getColumnIndex(DBHelper.KEY_TO_TRANSLATE);
+        int translated_index = cursor.getColumnIndex(DBHelper.KEY_TRANSLATED);
+        int lang_index = cursor.getColumnIndex(DBHelper.KEY_LANG);
+
+        translate_text.clear();
+        translated_text.clear();
+        lang_lang.clear();
+        if(cursor.moveToFirst()){
+            do{
+                translate_text.add(0, cursor.getString(to_index));
+                translated_text.add(0, cursor.getString(translated_index));
+                lang_lang.add(0,cursor.getString(lang_index));
+            }while(cursor.moveToNext());
+        }
+
+        cursor.close();
+        MainActivity.dbHelper.close();
     }
 
     @Override

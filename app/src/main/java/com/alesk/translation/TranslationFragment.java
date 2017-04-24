@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -156,6 +157,7 @@ public class TranslationFragment extends Fragment {
                 addToHistory();
                 to_translate.setText("");
                 saveState();
+                likeButton.setLiked(false);
             }
         });
 
@@ -163,12 +165,12 @@ public class TranslationFragment extends Fragment {
         likeButton.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
-
+                addToFavorites(to_translate.getText().toString(), translated_text.getText().toString(), lang);
             }
 
             @Override
             public void unLiked(LikeButton likeButton) {
-
+                removeFromFavorites(to_translate.getText().toString(), translated_text.getText().toString(), lang);
             }
         });
 
@@ -206,6 +208,90 @@ public class TranslationFragment extends Fragment {
 
                 MainActivity.dbHelper.close();
             }
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public static void addToFavorites(String to_trnslt, String trnsltd, String lng){
+        try {
+            if ((!to_translate.getText().toString().isEmpty() && !translated_text.getText().toString().isEmpty())) {
+
+                SQLiteDatabase database = MainActivity.dbHelper.getWritableDatabase();
+                ContentValues contentValues = new ContentValues();
+
+                contentValues.put(DBHelper.KEY_TO_TRANSLATE, to_trnslt);
+                contentValues.put(DBHelper.KEY_TRANSLATED, trnsltd);
+
+                contentValues.put(DBHelper.KEY_LANG, lng);
+
+                database.insert(DBHelper.TABLE_FAVORITES, null, contentValues);
+
+                FavoritesFragment.translate_text.add(0, to_trnslt);
+                FavoritesFragment.translated_text.add(0, trnsltd);
+                FavoritesFragment.lang_lang.add(0, lng);
+
+                MainActivity.dbHelper.close();
+            }
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public static void removeFromFavorites(String to_trnslt, String trnsltd, String lng){
+        try {
+            SQLiteDatabase database = MainActivity.dbHelper.getWritableDatabase();
+            Cursor cursor = database.query(DBHelper.TABLE_FAVORITES,null,null,null,null,null,null);
+            int to_index = cursor.getColumnIndex(DBHelper.KEY_TO_TRANSLATE);
+            int translated_index = cursor.getColumnIndex(DBHelper.KEY_TRANSLATED);
+            int lang_index = cursor.getColumnIndex(DBHelper.KEY_LANG);
+
+            if(cursor.moveToFirst()){
+                do{
+                    if(cursor.getString(to_index).equals(to_trnslt) &&
+                            cursor.getString(lang_index).equals(lng)){
+
+                        database.delete(DBHelper.TABLE_FAVORITES, "id = "+to_index, null);
+                        FavoritesFragment.translate_text.remove(to_index);
+                        FavoritesFragment.translated_text.remove(translated_index);
+                        FavoritesFragment.lang_lang.remove(lang_index);
+                    }
+                }while(cursor.moveToNext());
+            }
+
+            cursor.close();
+            MainActivity.dbHelper.close();
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public static void checkFavorites(String to_trnslt, String trnsltd, String lng, LikeButton likeButton){
+        try {
+            SQLiteDatabase database = MainActivity.dbHelper.getWritableDatabase();
+            Cursor cursor = database.query(DBHelper.TABLE_FAVORITES,null,null,null,null,null,null);
+            int to_index = cursor.getColumnIndex(DBHelper.KEY_TO_TRANSLATE);
+            int translated_index = cursor.getColumnIndex(DBHelper.KEY_TRANSLATED);
+            int lang_index = cursor.getColumnIndex(DBHelper.KEY_LANG);
+
+            if(cursor.moveToFirst()){
+                do{
+                    if(cursor.getString(to_index).equals(to_trnslt) &&
+                            cursor.getString(lang_index).equals(lng) && cursor.getString(translated_index).equals(trnsltd)){
+
+                        cursor.close();
+                        MainActivity.dbHelper.close();
+                        likeButton.setLiked(true);
+                    }
+                }while(cursor.moveToNext());
+            }
+
+            cursor.close();
+            MainActivity.dbHelper.close();
+            likeButton.setLiked(false);
         }catch (Exception e){
             System.out.println(e.getMessage());
             e.printStackTrace();
@@ -262,6 +348,7 @@ public class TranslationFragment extends Fragment {
                     res.setVisibility(View.VISIBLE);
                     rights.setVisibility(View.VISIBLE);
                     saveState();
+                    checkFavorites(to_translate.getText().toString(), translated_text.getText().toString(), lang, likeButton);
                 } else if (!MainActivity.is_connect) {
                     res.setVisibility(View.INVISIBLE);
                     rights.setVisibility(View.INVISIBLE);

@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.like.LikeButton;
+
 import java.util.ArrayList;
 
 /**
@@ -36,6 +38,9 @@ public class ListAdapter extends ArrayAdapter<String>{
         TextView translate_txt = (TextView) rowView.findViewById(R.id.translate_text);
         TextView translated_txt = (TextView) rowView.findViewById(R.id.translated_text);
         TextView lng_lng = (TextView) rowView.findViewById(R.id.lang_lang);
+        LikeButton likeButton = (LikeButton) rowView.findViewById(R.id.like_button);
+        TranslationFragment.checkFavorites(translate_text.get(position), translated_text.get(position),
+                lang_lang.get(position), likeButton);
 
         translate_txt.setText(translate_text.get(position));
         translated_txt.setText(translated_text.get(position));
