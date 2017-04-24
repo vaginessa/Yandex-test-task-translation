@@ -150,6 +150,15 @@ public class TranslationFragment extends Fragment {
                 }
             });
 
+        view.findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addToHistory();
+                to_translate.setText("");
+                saveState();
+            }
+        });
+
         likeButton = (LikeButton) view.findViewById(R.id.like_button);
         likeButton.setOnLikeListener(new OnLikeListener() {
             @Override
@@ -252,13 +261,7 @@ public class TranslationFragment extends Fragment {
                     translated_text.setText(translated_string);
                     res.setVisibility(View.VISIBLE);
                     rights.setVisibility(View.VISIBLE);
-
-                    sPref = getActivity().getPreferences(MODE_PRIVATE);
-                    SharedPreferences.Editor ed = sPref.edit();
-                    ed.putInt("Last_lang_to", lang_to.getSelectedItemPosition());
-                    ed.putInt("Last_lang_from", lang_from.getSelectedItemPosition());
-                    ed.putString("Last_to_translate", to_translate.getText().toString());
-                    ed.commit();
+                    saveState();
                 } else if (!MainActivity.is_connect) {
                     res.setVisibility(View.INVISIBLE);
                     rights.setVisibility(View.INVISIBLE);
@@ -269,6 +272,15 @@ public class TranslationFragment extends Fragment {
                 }
             }catch (Exception e){}
         }
+    }
+
+    private void saveState(){
+        sPref = getActivity().getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor ed = sPref.edit();
+        ed.putInt("Last_lang_to", lang_to.getSelectedItemPosition());
+        ed.putInt("Last_lang_from", lang_from.getSelectedItemPosition());
+        ed.putString("Last_to_translate", to_translate.getText().toString());
+        ed.commit();
     }
 
     private static void parseJSON_translate(String s){
