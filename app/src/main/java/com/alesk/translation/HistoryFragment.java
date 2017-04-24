@@ -36,6 +36,7 @@ public class HistoryFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         loadHistory();
+        if(MainActivity.is_connect)
         TranslationFragment.addToHistory();
     }
 
