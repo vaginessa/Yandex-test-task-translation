@@ -228,10 +228,6 @@ public class TranslationFragment extends Fragment {
 
                 database.insert(DBHelper.TABLE_FAVORITES, null, contentValues);
 
-                FavoritesFragment.translate_text.add(0, to_trnslt);
-                FavoritesFragment.translated_text.add(0, trnsltd);
-                FavoritesFragment.lang_lang.add(0, lng);
-
                 MainActivity.dbHelper.close();
             }
         }catch (Exception e){
@@ -269,22 +265,22 @@ public class TranslationFragment extends Fragment {
         }
     }
 
-    public static void checkFavorites(String to_trnslt, String trnsltd, String lng, LikeButton likeButton){
+    public static void checkFavorites(String to_trnslt, String lng, LikeButton likeButton){
         try {
             SQLiteDatabase database = MainActivity.dbHelper.getWritableDatabase();
             Cursor cursor = database.query(DBHelper.TABLE_FAVORITES,null,null,null,null,null,null);
             int to_index = cursor.getColumnIndex(DBHelper.KEY_TO_TRANSLATE);
-            int translated_index = cursor.getColumnIndex(DBHelper.KEY_TRANSLATED);
             int lang_index = cursor.getColumnIndex(DBHelper.KEY_LANG);
 
             if(cursor.moveToFirst()){
                 do{
                     if(cursor.getString(to_index).equals(to_trnslt) &&
-                            cursor.getString(lang_index).equals(lng) && cursor.getString(translated_index).equals(trnsltd)){
+                            cursor.getString(lang_index).equals(lng)){
 
                         cursor.close();
                         MainActivity.dbHelper.close();
                         likeButton.setLiked(true);
+                        return;
                     }
                 }while(cursor.moveToNext());
             }
@@ -348,7 +344,7 @@ public class TranslationFragment extends Fragment {
                     res.setVisibility(View.VISIBLE);
                     rights.setVisibility(View.VISIBLE);
                     saveState();
-                    checkFavorites(to_translate.getText().toString(), translated_text.getText().toString(), lang, likeButton);
+                    checkFavorites(to_translate.getText().toString(), lang, likeButton);
                 } else if (!MainActivity.is_connect) {
                     res.setVisibility(View.INVISIBLE);
                     rights.setVisibility(View.INVISIBLE);

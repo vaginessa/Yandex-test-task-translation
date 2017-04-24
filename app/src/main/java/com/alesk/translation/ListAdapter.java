@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.like.LikeButton;
+import com.like.OnLikeListener;
 
 import java.util.ArrayList;
 
@@ -34,13 +35,26 @@ public class ListAdapter extends ArrayAdapter<String>{
     public View getView(int position, View view, ViewGroup parent) {
         LayoutInflater inflater = context.getLayoutInflater();
         View rowView= inflater.inflate(R.layout.list_item, null, true);
+        final int index = position;
 
-        TextView translate_txt = (TextView) rowView.findViewById(R.id.translate_text);
+        final TextView translate_txt = (TextView) rowView.findViewById(R.id.translate_text);
         TextView translated_txt = (TextView) rowView.findViewById(R.id.translated_text);
         TextView lng_lng = (TextView) rowView.findViewById(R.id.lang_lang);
         LikeButton likeButton = (LikeButton) rowView.findViewById(R.id.like_button);
-        TranslationFragment.checkFavorites(translate_text.get(position), translated_text.get(position),
-                lang_lang.get(position), likeButton);
+        TranslationFragment.checkFavorites(translate_text.get(position), lang_lang.get(position), likeButton);
+        likeButton.setOnLikeListener(new OnLikeListener() {
+            @Override
+            public void liked(LikeButton likeButton) {
+                TranslationFragment.addToFavorites(translate_text.get(index), translated_text.get(index),
+                        lang_lang.get(index));
+            }
+
+            @Override
+            public void unLiked(LikeButton likeButton) {
+                TranslationFragment.removeFromFavorites(translate_text.get(index), translated_text.get(index),
+                        lang_lang.get(index));
+            }
+        });
 
         translate_txt.setText(translate_text.get(position));
         translated_txt.setText(translated_text.get(position));
