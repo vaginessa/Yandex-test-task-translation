@@ -170,7 +170,7 @@ public class TranslationFragment extends Fragment {
 
             @Override
             public void unLiked(LikeButton likeButton) {
-                removeFromFavorites(to_translate.getText().toString(), translated_text.getText().toString(), lang);
+                removeFromFavorites(to_translate.getText().toString(), lang);
             }
         });
 
@@ -236,23 +236,20 @@ public class TranslationFragment extends Fragment {
         }
     }
 
-    public static void removeFromFavorites(String to_trnslt, String trnsltd, String lng){
+    public static void removeFromFavorites(String to_trnslt, String lng){
         try {
             SQLiteDatabase database = MainActivity.dbHelper.getWritableDatabase();
             Cursor cursor = database.query(DBHelper.TABLE_FAVORITES,null,null,null,null,null,null);
             int to_index = cursor.getColumnIndex(DBHelper.KEY_TO_TRANSLATE);
-            int translated_index = cursor.getColumnIndex(DBHelper.KEY_TRANSLATED);
             int lang_index = cursor.getColumnIndex(DBHelper.KEY_LANG);
+            int id = cursor.getColumnIndex(DBHelper.KEY_ID);
 
             if(cursor.moveToFirst()){
                 do{
                     if(cursor.getString(to_index).equals(to_trnslt) &&
                             cursor.getString(lang_index).equals(lng)){
 
-                        database.delete(DBHelper.TABLE_FAVORITES, "id = "+to_index, null);
-                        FavoritesFragment.translate_text.remove(to_index);
-                        FavoritesFragment.translated_text.remove(translated_index);
-                        FavoritesFragment.lang_lang.remove(lang_index);
+                        database.delete(DBHelper.TABLE_FAVORITES, DBHelper.KEY_ID+" = " + cursor.getInt(id), null);
                     }
                 }while(cursor.moveToNext());
             }

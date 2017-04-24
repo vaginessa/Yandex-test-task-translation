@@ -51,7 +51,7 @@ public class ListAdapter extends ArrayAdapter<String>{
 
             @Override
             public void unLiked(LikeButton likeButton) {
-                TranslationFragment.removeFromFavorites(translate_text.get(index), translated_text.get(index),
+                TranslationFragment.removeFromFavorites(translate_text.get(index),
                         lang_lang.get(index));
             }
         });
