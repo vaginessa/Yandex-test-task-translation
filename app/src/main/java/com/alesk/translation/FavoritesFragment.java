@@ -41,29 +41,30 @@ public class FavoritesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_favorites, container, false);
         listView = (ListView) view.findViewById(R.id.favorites_list);
         adapter = new ListAdapter(getActivity(), translate_text, translated_text, lang_lang);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SharedPreferences sPref = getActivity().getPreferences(MODE_PRIVATE);
-                SharedPreferences.Editor ed = sPref.edit();
-                ed.putString("Last_to_translate", translate_text.get(position));
-                ed.putInt("Last_lang_from", TranslationFragment.code_langs.indexOf(lang_lang.get(position).substring(0,2))+1);
-                ed.putInt("Last_lang_to", TranslationFragment.code_langs.indexOf(lang_lang.get(position).substring(3,5)));
-                ed.commit();
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    SharedPreferences sPref = getActivity().getPreferences(MODE_PRIVATE);
+                    SharedPreferences.Editor ed = sPref.edit();
+                    ed.putString("Last_to_translate", translate_text.get(position));
+                    ed.putInt("Last_lang_from", TranslationFragment.code_langs.indexOf(lang_lang.get(position).substring(0, 2)) + 1);
+                    ed.putInt("Last_lang_to", TranslationFragment.code_langs.indexOf(lang_lang.get(position).substring(3, 5)));
+                    ed.commit();
 
-                FragmentTransaction f_transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                f_transaction.replace(R.id.content, MainActivity.translationFragment);
-                f_transaction.commit();
+                    FragmentTransaction f_transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                    f_transaction.replace(R.id.content, MainActivity.translationFragment);
+                    f_transaction.commit();
 
-                Menu menu = MainActivity.navigation.getMenu();
-                menu.getItem(0).setChecked(true);
-                menu.getItem(2).setChecked(false);
-            }
-        });
+                    Menu menu = MainActivity.navigation.getMenu();
+                    menu.getItem(0).setChecked(true);
+                    menu.getItem(2).setChecked(false);
+                }
+            });
 
         return view;
     }
