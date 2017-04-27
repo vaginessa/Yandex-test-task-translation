@@ -57,8 +57,8 @@ public class TranslationFragment extends Fragment {
     private static String code;
     private static String lang;
     private static SharedPreferences sPref;
-    private static ArrayAdapter<String> lang_from_adapter;
-    private static ArrayAdapter<String> lang_to_adapter;
+    private static ArrayAdapter lang_from_adapter;
+    private static ArrayAdapter lang_to_adapter;
     private static boolean need_update;
     private static TextView res;
     private static TextView rights;
@@ -67,8 +67,7 @@ public class TranslationFragment extends Fragment {
     public TranslationFragment() {}
 
     public static TranslationFragment newInstance() {
-        TranslationFragment fragment = new TranslationFragment();
-        return fragment;
+        return new TranslationFragment();
     }
 
     @Override
@@ -82,8 +81,6 @@ public class TranslationFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_translation, container, false);
 
         ((AppCompatActivity) getActivity()).setSupportActionBar((Toolbar) view.findViewById(R.id.toolbar));
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
-
         new GetLangsTask().execute();
 
         set_lang_from_adapter(view);
@@ -105,7 +102,7 @@ public class TranslationFragment extends Fragment {
                 sPref = getActivity().getPreferences(MODE_PRIVATE);
                 SharedPreferences.Editor ed = sPref.edit();
                 ed.putInt("Last_lang_to", position);
-                ed.commit();
+                ed.apply();
             }
 
             @Override
@@ -188,10 +185,11 @@ public class TranslationFragment extends Fragment {
                 lng = code_langs.get(index_from - 1) + "-" + code_langs.get(index_to);
             else lng = lang;
 
-            if ((!to_translate.getText().toString().isEmpty() && !translated_text.getText().toString().isEmpty()) &&
+            if (((!to_translate.getText().toString().isEmpty() && !translated_text.getText().toString().isEmpty()) &&
                     ((HistoryFragment.translate_text.size() > 0 &&
                     (!HistoryFragment.translate_text.get(0).equals(to_translate.getText().toString()) ||
-                    !HistoryFragment.lang_lang.get(0).equals(lng))) || HistoryFragment.translate_text.size() == 0)) {
+                    !HistoryFragment.lang_lang.get(0).equals(lng))) || HistoryFragment.translate_text.size() == 0)) &&
+                    MainActivity.is_connect) {
 
                 SQLiteDatabase database = MainActivity.dbHelper.getWritableDatabase();
                 ContentValues contentValues = new ContentValues();
@@ -308,7 +306,10 @@ public class TranslationFragment extends Fragment {
         }catch(UnsupportedEncodingException e){
             System.out.println(e.getMessage());
             e.printStackTrace();
-        }catch(Exception e){}
+        }catch(Exception e){
+            System.out.println("An error was occurred");
+            e.printStackTrace();
+        }
 
         return null;
     }
@@ -325,7 +326,10 @@ public class TranslationFragment extends Fragment {
                 }
                 MainActivity.hasConnection(getActivity());
                 is_empty = to_translate.getText().toString().isEmpty();
-            }catch(Exception e){}
+            }catch(Exception e){
+                System.out.println("Unexpected error was occurred");
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -352,7 +356,9 @@ public class TranslationFragment extends Fragment {
                 } else {
                     translated_text.setText("");
                 }
-            }catch (Exception e){}
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 
@@ -362,7 +368,7 @@ public class TranslationFragment extends Fragment {
         ed.putInt("Last_lang_to", lang_to.getSelectedItemPosition());
         ed.putInt("Last_lang_from", lang_from.getSelectedItemPosition());
         ed.putString("Last_to_translate", to_translate.getText().toString());
-        ed.commit();
+        ed.apply();
     }
 
     private static void parseJSON_translate(String s){
@@ -377,7 +383,10 @@ public class TranslationFragment extends Fragment {
         }catch(ParseException e){
             System.out.println(e.getMessage());
             e.printStackTrace();
-        }catch(Exception e){}
+        }catch(Exception e){
+            System.out.println("Error in parsing json file");
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -491,7 +500,9 @@ public class TranslationFragment extends Fragment {
             }catch(ParseException e){
                 System.out.println(e.getMessage());
                 e.printStackTrace();
-            }catch(Exception e){}
+            }catch(Exception e){
+                e.printStackTrace();
+            }
         }
     }
 }

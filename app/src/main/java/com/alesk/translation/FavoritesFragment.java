@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import static android.content.Context.MODE_PRIVATE;
 
 public class FavoritesFragment extends Fragment {
-    private static ListView listView;
-    private static ListAdapter adapter;
     public static ArrayList<String> translate_text = new ArrayList<>();
     public static ArrayList<String> translated_text = new ArrayList<>();
     public static ArrayList<String> lang_lang = new ArrayList<>();
@@ -28,8 +26,7 @@ public class FavoritesFragment extends Fragment {
     public FavoritesFragment() {}
 
     public static FavoritesFragment newInstance() {
-        FavoritesFragment fragment = new FavoritesFragment();
-        return fragment;
+        return new FavoritesFragment();
     }
 
     @Override
@@ -43,8 +40,8 @@ public class FavoritesFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_favorites, container, false);
-        listView = (ListView) view.findViewById(R.id.favorites_list);
-        adapter = new ListAdapter(getActivity(), translate_text, translated_text, lang_lang);
+        ListView listView = (ListView) view.findViewById(R.id.favorites_list);
+        ListAdapter adapter = new ListAdapter(getActivity(), translate_text, translated_text, lang_lang);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -54,7 +51,7 @@ public class FavoritesFragment extends Fragment {
                     ed.putString("Last_to_translate", translate_text.get(position));
                     ed.putInt("Last_lang_from", TranslationFragment.code_langs.indexOf(lang_lang.get(position).substring(0, 2)) + 1);
                     ed.putInt("Last_lang_to", TranslationFragment.code_langs.indexOf(lang_lang.get(position).substring(3, 5)));
-                    ed.commit();
+                    ed.apply();
 
                     FragmentTransaction f_transaction = getActivity().getSupportFragmentManager().beginTransaction();
                     f_transaction.replace(R.id.content, MainActivity.translationFragment);
