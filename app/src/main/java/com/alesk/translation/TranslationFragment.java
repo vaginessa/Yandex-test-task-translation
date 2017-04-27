@@ -215,8 +215,7 @@ public class TranslationFragment extends Fragment {
 
     public static void addToFavorites(String to_trnslt, String trnsltd, String lng){
         try {
-            if ((!to_translate.getText().toString().isEmpty() && !translated_text.getText().toString().isEmpty()) &&
-                    MainActivity.is_connect) {
+            if ((!to_trnslt.isEmpty() && !trnsltd.isEmpty()) && MainActivity.is_connect) {
 
                 SQLiteDatabase database = MainActivity.dbHelper.getWritableDatabase();
                 ContentValues contentValues = new ContentValues();
