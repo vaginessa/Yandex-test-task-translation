@@ -4,36 +4,36 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-        <TextView
-            android:id="@+id/translate_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="50dp"
-            android:maxLines="1"
-            android:textColor="@android:color/background_dark"
-            android:textSize="9pt" />
+    <TextView
+        android:id="@+id/translate_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="50dp"
+        android:maxLines="1"
+        android:textColor="@android:color/background_dark"
+        android:textSize="9pt" />
 
-        <TextView
-            android:id="@+id/translated_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/background_dark"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="50dp"
-            android:maxLines="1"
-            android:layout_marginTop="24dp"
-            android:textSize="9pt" />
+    <TextView
+        android:id="@+id/translated_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/background_dark"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="50dp"
+        android:maxLines="1"
+        android:layout_marginTop="24dp"
+        android:textSize="9pt" />
 
-        <TextView
-            android:id="@+id/lang_lang"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="48dp"
-            android:textSize="8pt" />
+    <TextView
+        android:id="@+id/lang_lang"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="48dp"
+        android:textSize="8pt" />
 
     <com.like.LikeButton
         android:id="@+id/like_button"

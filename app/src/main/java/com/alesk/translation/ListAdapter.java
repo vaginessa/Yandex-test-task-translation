@@ -37,7 +37,7 @@ public class ListAdapter extends ArrayAdapter<String>{
         View rowView= inflater.inflate(R.layout.list_item, null, true);
         final int index = position;
 
-        final TextView translate_txt = (TextView) rowView.findViewById(R.id.translate_text);
+        TextView translate_txt = (TextView) rowView.findViewById(R.id.translate_text);
         TextView translated_txt = (TextView) rowView.findViewById(R.id.translated_text);
         TextView lng_lng = (TextView) rowView.findViewById(R.id.lang_lang);
         LikeButton likeButton = (LikeButton) rowView.findViewById(R.id.like_button);

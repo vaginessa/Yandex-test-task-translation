@@ -1,5 +1,7 @@
 package com.alesk.translation;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.like.LikeButton;
 import com.like.OnLikeListener;
@@ -108,6 +111,16 @@ public class TranslationFragment extends Fragment {
         });
 
         translated_text = (TextView) view.findViewById(R.id.translated_text);
+        translated_text.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("", translated_text.getText());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(getActivity(), "Перевод скопирован в буфер обмена", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         if (!MainActivity.is_connect)
             translated_text.setText(getString(R.string.no_connection));
         to_translate = ((EditText) view.findViewById(R.id.to_translate));
