@@ -5,6 +5,7 @@
     <string name="title_history">История</string>
     <string name="no_connection">Нет подключения к интернету =(</string>
     <string name="yandex_translate"><u>тык</u></string>
+    <string name="yandex_translate_full">http://translate.yandex.ru/</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

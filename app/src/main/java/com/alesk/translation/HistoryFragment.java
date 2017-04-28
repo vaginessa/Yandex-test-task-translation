@@ -6,9 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -25,13 +23,10 @@ public class HistoryFragment extends Fragment {
 
     public HistoryFragment() {}
 
-    public static HistoryFragment newInstance() {
-        return new HistoryFragment();
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         loadHistory();
         if(MainActivity.is_connect)
         TranslationFragment.addToHistory();
@@ -53,13 +48,7 @@ public class HistoryFragment extends Fragment {
                 ed.putInt("Last_lang_to", TranslationFragment.code_langs.indexOf(lang_lang.get(position).substring(3,5)));
                 ed.apply();
 
-                FragmentTransaction f_transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                f_transaction.replace(R.id.content, MainActivity.translationFragment);
-                f_transaction.commit();
-
-                Menu menu = MainActivity.navigation.getMenu();
-                menu.getItem(0).setChecked(true);
-                menu.getItem(2).setChecked(false);
+                MainActivity.navigation.setSelectedItem(0);
             }
         });
 

@@ -1,7 +1,6 @@
 package com.alesk.translation;
 
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -10,7 +9,6 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
     private static HistoryFragment historyFragment;
     public static boolean is_connect;
     public static DBHelper dbHelper;
-    public static BottomNavigationView navigation;
+    public static RichBottomNavigationView navigation;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -40,8 +38,6 @@ public class MainActivity extends AppCompatActivity {
                     return true;
             }
 
-            updateNavigationBarState(item.getItemId());
-
             return false;
         }
 
@@ -51,15 +47,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         hasConnection(this);
         dbHelper = new DBHelper(this);
 
-        navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation = (RichBottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         translationFragment = new TranslationFragment();
         setFragment(translationFragment, false);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("active tab", navigation.getSelectedItem());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        navigation.setSelectedItem(savedInstanceState.getInt("active tab"));
     }
 
     private void setFragment(Fragment fragment, boolean is_replace){
@@ -101,14 +108,5 @@ public class MainActivity extends AppCompatActivity {
             System.out.println(e.getMessage());
         }
         is_connect = false;
-    }
-
-    private void updateNavigationBarState(int actionId){
-        Menu menu = navigation.getMenu();
-
-        for (int i = 0, size = menu.size(); i < size; i++) {
-            MenuItem item = menu.getItem(i);
-            item.setChecked(item.getItemId() == actionId);
-        }
     }
 }

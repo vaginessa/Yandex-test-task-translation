@@ -66,13 +66,10 @@ public class TranslationFragment extends Fragment {
 
     public TranslationFragment() {}
 
-    public static TranslationFragment newInstance() {
-        return new TranslationFragment();
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
     }
 
     @Override
@@ -81,6 +78,7 @@ public class TranslationFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_translation, container, false);
 
         ((AppCompatActivity) getActivity()).setSupportActionBar((Toolbar) view.findViewById(R.id.toolbar));
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
         new GetLangsTask().execute();
 
         set_lang_from_adapter(view);
@@ -142,7 +140,7 @@ public class TranslationFragment extends Fragment {
                 public void onClick(View v) {
                     int tmp = lang_from.getSelectedItemPosition();
                     if (tmp > 0) {
-                        to_translate.setText(translated_string);
+                        to_translate.setText(translated_text.getText());
                         lang_from.setSelection(lang_to.getSelectedItemPosition() + 1);
                         lang_to.setSelection(tmp - 1);
                     }
