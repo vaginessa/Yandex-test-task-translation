@@ -9,6 +9,55 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/rights"
+            android:layout_below="@+id/toolbar"
+            android:layout_toStartOf="@+id/like_button"
+            android:orientation="horizontal"
+            android:layout_toLeftOf="@+id/like_button">
+
+            <EditText
+                android:id="@+id/to_translate"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/toolbar"
+                android:layout_gravity="top|bottom"
+                android:layout_weight="1"
+                android:gravity="top"
+                android:inputType="textMultiLine"
+                android:textSize="20sp" />
+
+            <ScrollView
+                android:id="@+id/scroll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignTop="@+id/delete_button"
+                android:layout_gravity="top|bottom|right"
+                android:layout_toLeftOf="@+id/like_button"
+                android:layout_toStartOf="@+id/like_button"
+                android:layout_weight="1"
+                android:paddingTop="3dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/translated_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginTop="5dp"
+                        android:isScrollContainer="false"
+                        android:textSize="22sp" />
+                </LinearLayout>
+            </ScrollView>
+
+        </LinearLayout>
+
         <TextView
             android:id="@+id/rights"
             android:layout_width="wrap_content"
@@ -64,54 +113,16 @@
 
         </android.support.v7.widget.Toolbar>
 
-        <EditText
-            android:id="@+id/to_translate"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="top|bottom"
-            android:layout_marginBottom="15dp"
-            android:layout_marginRight="320dp"
-            android:gravity="top"
-            android:inputType="textMultiLine"
-            android:textSize="20sp"
-            android:layout_below="@+id/toolbar" />
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignTop="@+id/delete_button"
-            android:layout_gravity="top|bottom|right"
-            android:layout_marginBottom="15dp"
-            android:layout_marginLeft="280dp"
-            android:layout_toLeftOf="@+id/like_button"
-            android:layout_toStartOf="@+id/like_button"
-            android:paddingTop="3dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/translated_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="5dp"
-                    android:isScrollContainer="false"
-                    android:textSize="22sp" />
-            </LinearLayout>
-        </ScrollView>
-
         <ImageButton
             android:id="@+id/delete_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/like_button"
-            android:layout_alignStart="@+id/like_button"
-            android:layout_alignTop="@+id/to_translate"
+            android:layout_alignEnd="@+id/like_button"
+            android:layout_alignRight="@+id/like_button"
+            android:layout_below="@+id/toolbar"
             android:layout_gravity="right"
-            android:layout_marginLeft="14dp"
+            android:layout_marginRight="14dp"
+            android:layout_marginTop="8dp"
             android:adjustViewBounds="false"
             android:background="@android:color/transparent"
             app:srcCompat="@mipmap/ic_close" />
