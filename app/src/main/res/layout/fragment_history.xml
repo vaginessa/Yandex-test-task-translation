@@ -9,5 +9,8 @@
     <ListView
         android:id="@+id/history_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:nestedScrollingEnabled="false"
+        android:persistentDrawingCache="scrolling"
+        android:scrollingCache="true" />
 </FrameLayout>

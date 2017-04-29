@@ -273,31 +273,50 @@ public class TranslationFragment extends Fragment {
     }
 
     public static void checkFavorites(String to_trnslt, String lng, LikeButton likeButton){
-        try {
-            SQLiteDatabase database = MainActivity.dbHelper.getWritableDatabase();
-            Cursor cursor = database.query(DBHelper.TABLE_FAVORITES,null,null,null,null,null,null);
-            int to_index = cursor.getColumnIndex(DBHelper.KEY_TO_TRANSLATE);
-            int lang_index = cursor.getColumnIndex(DBHelper.KEY_LANG);
+        new CheckFavoritesTask(likeButton).execute(to_trnslt, lng);
+    }
 
-            if(cursor.moveToFirst()){
-                do{
-                    if(cursor.getString(to_index).equals(to_trnslt) &&
-                            cursor.getString(lang_index).equals(lng)){
+    private static class CheckFavoritesTask extends AsyncTask<String, Void, Void> {
+        private boolean is_liked;
+        private LikeButton button;
 
-                        cursor.close();
-                        MainActivity.dbHelper.close();
-                        likeButton.setLiked(true);
-                        return;
-                    }
-                }while(cursor.moveToNext());
+        public CheckFavoritesTask(LikeButton button){this.button = button;}
+
+        protected void onPreExecute(){}
+
+        @Override
+        protected Void doInBackground(String... params) {
+            try {
+                SQLiteDatabase database = MainActivity.dbHelper.getWritableDatabase();
+                Cursor cursor = database.query(DBHelper.TABLE_FAVORITES,null,null,null,null,null,null);
+                int to_index = cursor.getColumnIndex(DBHelper.KEY_TO_TRANSLATE);
+                int lang_index = cursor.getColumnIndex(DBHelper.KEY_LANG);
+
+                if(cursor.moveToFirst()){
+                    do{
+                        if(cursor.getString(to_index).equals(params[0]) &&
+                                cursor.getString(lang_index).equals(params[1])){
+
+                            cursor.close();
+                            MainActivity.dbHelper.close();
+                            is_liked = true;
+                            return null;
+                        }
+                    }while(cursor.moveToNext());
+                }
+
+                cursor.close();
+                MainActivity.dbHelper.close();
+                is_liked = false;
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                e.printStackTrace();
             }
+            return null;
+        }
 
-            cursor.close();
-            MainActivity.dbHelper.close();
-            likeButton.setLiked(false);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+        protected void onPostExecute(Void p){
+            this.button.setLiked(is_liked);
         }
     }
 
