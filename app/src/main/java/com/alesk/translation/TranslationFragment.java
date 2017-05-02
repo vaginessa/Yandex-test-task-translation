@@ -153,10 +153,13 @@ public class TranslationFragment extends Fragment {
                 public void onClick(View v) {
                     int tmp = lang_from.getSelectedItemPosition();
                     if (tmp > 0) {
-                        to_translate.setText(translated_text.getText());
                         lang_from.setSelection(lang_to.getSelectedItemPosition() + 1);
                         lang_to.setSelection(tmp - 1);
+                    }else{
+                        lang_from.setSelection(code_langs.indexOf(lang.substring(2,4))+1);
+                        lang_to.setSelection(code_langs.indexOf(lang.substring(0,2)));
                     }
+                    to_translate.setText(translated_text.getText());
                 }
             });
 
