@@ -3,7 +3,7 @@
     <string name="title_home">Перевод</string>
     <string name="title_favorites">Избранные</string>
     <string name="title_history">История</string>
-    <string name="no_connection">Нет подключения к интернету =(</string>
+    <string name="no_connection">Отсутствует подключение к интернету</string>
     <string name="yandex_translate"><u>тык</u></string>
     <string name="yandex_translate_full">http://translate.yandex.ru/</string>
 

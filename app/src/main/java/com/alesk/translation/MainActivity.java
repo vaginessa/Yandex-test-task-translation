@@ -1,6 +1,5 @@
 package com.alesk.translation;
 
-import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -11,11 +10,14 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import com.alesk.translation.Fragments.FavoritesFragment;
+import com.alesk.translation.Fragments.HistoryFragment;
+import com.alesk.translation.Fragments.TranslationFragment;
+
 public class MainActivity extends AppCompatActivity {
     public static TranslationFragment translationFragment;
     private static FavoritesFragment favoritesFragment;
     private static HistoryFragment historyFragment;
-    public static boolean is_connect;
     public static DBHelper dbHelper;
     public static RichBottomNavigationView navigation;
 
@@ -47,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        hasConnection(this);
         dbHelper = new DBHelper(this);
 
         navigation = (RichBottomNavigationView) findViewById(R.id.navigation);
@@ -84,29 +85,27 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-    public static void hasConnection(final Context context)
+    public static boolean hasConnection()
     {
         try {
-            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            ConnectivityManager cm = (ConnectivityManager) TranslateApplication.getAppContext().getSystemService(
+                    TranslateApplication.CONNECTIVITY_SERVICE);
             NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
             if (wifiInfo != null && wifiInfo.isConnected()) {
-                is_connect = true;
-                return;
+                return true;
             }
             wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
             if (wifiInfo != null && wifiInfo.isConnected()) {
-                is_connect = true;
-                return;
+                return true;
             }
             wifiInfo = cm.getActiveNetworkInfo();
             if (wifiInfo != null && wifiInfo.isConnected()) {
-                is_connect = true;
-                return;
+                return true;
             }
-            is_connect = false;
+            return false;
         }catch(Exception e){
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
-        is_connect = false;
+        return false;
     }
 }
