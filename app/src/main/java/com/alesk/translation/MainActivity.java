@@ -15,9 +15,9 @@ import com.alesk.translation.Fragments.HistoryFragment;
 import com.alesk.translation.Fragments.TranslationFragment;
 
 public class MainActivity extends AppCompatActivity {
-    public static TranslationFragment translationFragment;
-    private static FavoritesFragment favoritesFragment;
-    private static HistoryFragment historyFragment;
+    private TranslationFragment translationFragment;
+    private FavoritesFragment favoritesFragment;
+    private HistoryFragment historyFragment;
     public static DBHelper dbHelper;
     public static RichBottomNavigationView navigation;
 
@@ -78,6 +78,10 @@ public class MainActivity extends AppCompatActivity {
             f_transaction.add(R.id.content, fragment);
         }
         f_transaction.commit();
+    }
+
+    public void setArguments(Bundle bundle){
+        translationFragment.setArguments(bundle);
     }
 
     @Override

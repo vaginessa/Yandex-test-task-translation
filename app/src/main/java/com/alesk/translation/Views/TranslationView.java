@@ -1,14 +1,13 @@
 package com.alesk.translation.Views;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 /**
  * Created by Acer on 10-May-17.
  */
 
 public interface TranslationView {
-    void updateSpinnerAdapters();
+    void notifySpinnerAdapters();
     Context getContext();
     String getTextToTranslate();
     void setTextToTranslate(String text);
@@ -18,7 +17,6 @@ public interface TranslationView {
     int getTargetLangItemPosition();
     void setLangFromItemPosition(int position);
     void setTargetLangItemPosition(int position);
-    SharedPreferences getPreferences();
     void setRightsVisible(int c);
     void setLike(boolean like);
     boolean isLiked();

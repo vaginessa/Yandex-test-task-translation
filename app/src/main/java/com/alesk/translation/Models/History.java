@@ -1,6 +1,7 @@
 package com.alesk.translation.Models;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.alesk.translation.DBHelper;
@@ -63,5 +64,27 @@ public class History {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void loadHistory(){
+        SQLiteDatabase database = MainActivity.dbHelper.getWritableDatabase();
+        Cursor cursor = database.query(DBHelper.TABLE_HISTORY,null,null,null,null,null,null);
+        int to_index = cursor.getColumnIndex(DBHelper.KEY_TO_TRANSLATE);
+        int translated_index = cursor.getColumnIndex(DBHelper.KEY_TRANSLATED);
+        int lang_index = cursor.getColumnIndex(DBHelper.KEY_LANG);
+        int fav_index = cursor.getColumnIndex(DBHelper.KEY_IS_FAVORITE);
+
+        clearData();
+        if(cursor.moveToFirst()){
+            do{
+                translate_text.add(0, cursor.getString(to_index));
+                translated_text.add(0, cursor.getString(translated_index));
+                lang_lang.add(0,cursor.getString(lang_index));
+                fav.add(0, cursor.getString(fav_index).equals("true"));
+            }while(cursor.moveToNext());
+        }
+
+        cursor.close();
+        MainActivity.dbHelper.close();
     }
 }

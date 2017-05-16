@@ -2,7 +2,6 @@ package com.alesk.translation.Fragments;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -27,19 +26,16 @@ import com.alesk.translation.Views.TranslationView;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 
-import static android.content.Context.MODE_PRIVATE;
-
 public class TranslationFragment extends Fragment implements TranslationView {
     private TextView translated_text;
     private EditText to_translate;
     private Spinner lang_from;
     private Spinner target_lang;
-    private static ArrayAdapter lang_from_adapter;
-    private static ArrayAdapter target_lang_adapter;
+    private ArrayAdapter lang_from_adapter;
+    private ArrayAdapter target_lang_adapter;
     private LikeButton likeButton;
     private TextView res;
     private TextView rights;
-    private static SharedPreferences sPref;
     private static boolean is_liked;
 
     private static TranslationPresenter mTranslationPresenter;
@@ -53,11 +49,9 @@ public class TranslationFragment extends Fragment implements TranslationView {
         return is_liked;
     }
 
-    public void updateSpinnerAdapters(){
+    public void notifySpinnerAdapters(){
         lang_from_adapter.notifyDataSetChanged();
         target_lang_adapter.notifyDataSetChanged();
-        sPref = getActivity().getPreferences(MODE_PRIVATE);
-        target_lang.setSelection(sPref.getInt("Last_lang_to", 0));
     }
 
     public int getLangFromItemPosition() {
@@ -76,17 +70,13 @@ public class TranslationFragment extends Fragment implements TranslationView {
         target_lang.setSelection(position);
     }
 
-    public SharedPreferences getPreferences(){
-        sPref = getActivity().getPreferences(MODE_PRIVATE);
-        return sPref;
-    }
-
     public String getTextToTranslate(){
         return to_translate.getText().toString();
     }
 
     public void setTextToTranslate(String text){
         to_translate.setText(text);
+        to_translate.setSelection(text.length());
     }
 
     public void setTranslatedText(String text){
@@ -134,6 +124,8 @@ public class TranslationFragment extends Fragment implements TranslationView {
         target_lang_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         target_lang.setAdapter(target_lang_adapter);
 
+        mTranslationPresenter.initialize();
+
         lang_from.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -158,7 +150,7 @@ public class TranslationFragment extends Fragment implements TranslationView {
         translated_text.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mTranslationPresenter.copyToBuffer(getTranslatedText());
+                mTranslationPresenter.onTranslatedTextClick();
                 Toast.makeText(getActivity(), "Перевод скопирован в буфер обмена", Toast.LENGTH_SHORT).show();
             }
         });
@@ -172,7 +164,7 @@ public class TranslationFragment extends Fragment implements TranslationView {
 
             @Override
             public void afterTextChanged(Editable s) {
-                mTranslationPresenter.translate();
+                mTranslationPresenter.afterTextChanged();
             }
         });
 
@@ -211,15 +203,13 @@ public class TranslationFragment extends Fragment implements TranslationView {
             }
         });
 
-        mTranslationPresenter.initialize();
-
         return view;
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        mTranslationPresenter.onResume();
+        mTranslationPresenter.onResume(getArguments());
     }
 
     @Override

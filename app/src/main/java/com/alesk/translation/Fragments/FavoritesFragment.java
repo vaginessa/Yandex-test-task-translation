@@ -1,7 +1,6 @@
 package com.alesk.translation.Fragments;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -16,8 +15,6 @@ import com.alesk.translation.Models.Favorites;
 import com.alesk.translation.Presenters.FavoritesPresenter;
 import com.alesk.translation.R;
 import com.alesk.translation.Views.FavoritesView;
-
-import static android.content.Context.MODE_PRIVATE;
 
 public class FavoritesFragment extends Fragment implements FavoritesView {
     private static FavoritesPresenter mFavoritesPresenter;
@@ -43,13 +40,15 @@ public class FavoritesFragment extends Fragment implements FavoritesView {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    SharedPreferences sPref = getActivity().getPreferences(MODE_PRIVATE);
-                    mFavoritesPresenter.onItemClickListener(sPref, position);
-                    MainActivity.navigation.setSelectedItem(0);
+                    mFavoritesPresenter.onItemClick(position);
                 }
             });
 
         return view;
+    }
+
+    public MainActivity getMainActivity(){
+        return (MainActivity) getActivity();
     }
 
     @Override

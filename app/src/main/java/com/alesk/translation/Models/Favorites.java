@@ -20,6 +20,28 @@ public class Favorites {
     public static ArrayList<String> translated_text = new ArrayList<>();
     public static ArrayList<String> lang_lang = new ArrayList<>();
 
+    public void loadFavorites(){
+        SQLiteDatabase database = MainActivity.dbHelper.getWritableDatabase();
+        Cursor cursor = database.query(DBHelper.TABLE_FAVORITES,null,null,null,null,null,null);
+        int to_index = cursor.getColumnIndex(DBHelper.KEY_TO_TRANSLATE);
+        int translated_index = cursor.getColumnIndex(DBHelper.KEY_TRANSLATED);
+        int lang_index = cursor.getColumnIndex(DBHelper.KEY_LANG);
+
+        translate_text.clear();
+        translated_text.clear();
+        lang_lang.clear();
+        if(cursor.moveToFirst()){
+            do{
+                translate_text.add(0, cursor.getString(to_index));
+                translated_text.add(0, cursor.getString(translated_index));
+                lang_lang.add(0,cursor.getString(lang_index));
+            }while(cursor.moveToNext());
+        }
+
+        cursor.close();
+        MainActivity.dbHelper.close();
+    }
+
     public static void removeFromFavorites(String to_trnslt, String lng){
         try {
             SQLiteDatabase database = MainActivity.dbHelper.getWritableDatabase();
@@ -94,7 +116,6 @@ public class Favorites {
     public static boolean isFavorite(String to_translate, String lang){
         CheckFavoritesThread checkFavoritesThread = new CheckFavoritesThread(to_translate, lang);
         checkFavoritesThread.start();
-        try{ checkFavoritesThread.join(); }catch(InterruptedException ie){ie.printStackTrace();}
         return checkFavoritesThread.getResponse();
     }
 
@@ -103,12 +124,12 @@ public class Favorites {
         String lang;
         boolean is_favorite;
 
-        public CheckFavoritesThread(String to_translate, String lang){
+        CheckFavoritesThread(String to_translate, String lang){
             this.to_translate = to_translate;
             this.lang = lang;
         }
 
-        public boolean getResponse(){
+        boolean getResponse(){
             return this.is_favorite;
         }
 

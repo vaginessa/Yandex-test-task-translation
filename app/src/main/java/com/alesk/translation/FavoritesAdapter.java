@@ -42,30 +42,16 @@ public class FavoritesAdapter extends ArrayAdapter<String> {
     @Override
     public View getView(int position, View view, ViewGroup parent) {
         ViewHolder viewHolder;
+        final int index = position;
 
         if(view == null) {
             LayoutInflater inflater = context.getLayoutInflater();
             view = inflater.inflate(R.layout.list_item, null, true);
-            final int index = position;
             viewHolder = new ViewHolder();
             viewHolder.translate_txt = (TextView) view.findViewById(R.id.translate_text);
             viewHolder.translated_txt = (TextView) view.findViewById(R.id.translated_text);
             viewHolder.lng_lng = (TextView) view.findViewById(R.id.lang_lang);
             viewHolder.likeButton = (LikeButton) view.findViewById(R.id.like_button);
-
-            viewHolder.likeButton.setOnLikeListener(new OnLikeListener() {
-                @Override
-                public void liked(LikeButton likeButton) {
-                    Favorites.addToFavorites(translate_text.get(index), translated_text.get(index),
-                            lang_lang.get(index));
-                }
-
-                @Override
-                public void unLiked(LikeButton likeButton) {
-                    Favorites.removeFromFavorites(translate_text.get(index),
-                            lang_lang.get(index));
-                }
-            });
             view.setTag(viewHolder);
         }else{
             viewHolder = (ViewHolder) view.getTag();
@@ -75,6 +61,20 @@ public class FavoritesAdapter extends ArrayAdapter<String> {
         viewHolder.translated_txt.setText(translated_text.get(position));
         viewHolder.lng_lng.setText(lang_lang.get(position));
         viewHolder.likeButton.setLiked(true);
+
+        viewHolder.likeButton.setOnLikeListener(new OnLikeListener() {
+            @Override
+            public void liked(LikeButton likeButton) {
+                Favorites.addToFavorites(translate_text.get(index), translated_text.get(index),
+                        lang_lang.get(index));
+            }
+
+            @Override
+            public void unLiked(LikeButton likeButton) {
+                Favorites.removeFromFavorites(translate_text.get(index),
+                        lang_lang.get(index));
+            }
+        });
 
         return view;
     }

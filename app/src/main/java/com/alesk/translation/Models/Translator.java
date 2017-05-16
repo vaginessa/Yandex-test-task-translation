@@ -1,8 +1,6 @@
 package com.alesk.translation.Models;
 
-import android.os.AsyncTask;
-
-import com.alesk.translation.Views.TranslationView;
+import com.alesk.translation.Presenters.TranslationPresenter;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -62,19 +60,62 @@ public class Translator {
         return code_langs.indexOf(s);
     }
 
-    public void getLangs(TranslationView v){
-        GetLangsTask getLangsTask = new GetLangsTask(v);
-        getLangsTask.execute();
+    public void getLangs(TranslationPresenter p){
+        GetLangs getLangs = new GetLangs();
+        getLangs.start();
+        try {
+            getLangs.join();
+        }catch (InterruptedException ie){}
+
+        try {
+            JSONParser parser = new JSONParser();
+            JSONObject jobj = (JSONObject)((JSONObject) parser.parse(getLangs.result)).get("langs");
+
+            langs.clear();
+            langs_from.clear();
+
+            HashMap<String, String> lngs = new HashMap<>();
+
+            ArrayList<String> keys = new ArrayList<>(); keys.addAll(jobj.keySet());
+            langs.addAll(jobj.values());
+            for(int i = 0; i < keys.size(); i++){
+                lngs.put(langs.get(i), keys.get(i));
+            }
+
+            Collections.sort(langs);
+            for(int i = 0; i < langs.size(); i++){
+                code_langs.add(lngs.get(langs.get(i)));
+            }
+
+            langs_from.addAll(langs);
+            langs_from.add(0, "Автоматически");
+
+            p.getLangsCallBack();
+        }catch(ParseException e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
-    public String getTranslate(String text, int lang_from_index, int target_lang_index){
+    private static class GetLangs extends Thread{
+        String result;
+
+        @Override
+        public void run() {
+            result = requestLangs();
+        }
+    }
+
+    public void translate(String text, int lang_from_index, int target_lang_index){
         Translate translate = new Translate(text, lang_from_index, target_lang_index);
         translate.start();
         try {
             translate.join();
         }catch (InterruptedException ie){}
 
-        return translate.result;
+        parseJSON_translate(translate.result);
     }
 
     private class Translate extends Thread{
@@ -110,7 +151,7 @@ public class Translator {
         }
     }
 
-    public void parseJSON_translate(String s){
+    private void parseJSON_translate(String s){
         try {
             JSONParser parser = new JSONParser();
             JSONObject jobj = (JSONObject) parser.parse(s);
@@ -121,56 +162,6 @@ public class Translator {
             e.printStackTrace();
         }catch(Exception e){
             e.printStackTrace();
-        }
-    }
-
-    private class GetLangsTask extends AsyncTask<Void, Void, Void> {
-        String result;
-        TranslationView mTranslationView;
-
-        public GetLangsTask(TranslationView mTranslationView){
-            this.mTranslationView = mTranslationView;
-        }
-
-        protected void onPreExecute(){}
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            result = requestLangs();
-            return null;
-        }
-
-        protected void onPostExecute(Void r){
-            try {
-                JSONParser parser = new JSONParser();
-                JSONObject jobj = (JSONObject)((JSONObject) parser.parse(result)).get("langs");
-
-                langs.clear();
-                langs_from.clear();
-
-                HashMap<String, String> lngs = new HashMap<>();
-
-                ArrayList<String> keys = new ArrayList<>(); keys.addAll(jobj.keySet());
-                langs.addAll(jobj.values());
-                for(int i = 0; i < keys.size(); i++){
-                    lngs.put(langs.get(i), keys.get(i));
-                }
-
-                Collections.sort(langs);
-                for(int i = 0; i < langs.size(); i++){
-                    code_langs.add(lngs.get(langs.get(i)));
-                }
-
-                langs_from.addAll(langs);
-                langs_from.add(0, "Автоматически");
-
-                mTranslationView.updateSpinnerAdapters();
-            }catch(ParseException e){
-                System.out.println(e.getMessage());
-                e.printStackTrace();
-            }catch(Exception e){
-                e.printStackTrace();
-            }
         }
     }
 
