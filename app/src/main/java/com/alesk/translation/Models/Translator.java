@@ -1,6 +1,8 @@
 package com.alesk.translation.Models;
 
-import com.alesk.translation.Presenters.TranslationPresenter;
+import android.os.AsyncTask;
+
+import com.alesk.translation.MainMVP;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -24,48 +26,36 @@ import javax.net.ssl.HttpsURLConnection;
  */
 
 public class Translator {
-    public static ArrayList<String> langs_from = new ArrayList<>();
-    public static ArrayList<String> langs = new ArrayList<>();
-    public static ArrayList<String> code_langs = new ArrayList<>();
-    private static String translated_text;
-    private static String text_to_translate;
-    private static String code;
-    private static String lang;
-
-    public String getTextToTranslate(){
-        return text_to_translate;
-    }
+    public ArrayList<String> langs_from = new ArrayList<>();
+    public ArrayList<String> langs = new ArrayList<>();
+    private static ArrayList<String> code_langs = new ArrayList<>();
+    private String translated_text;
+    private String code;
+    private String lang;
+    private TranslateTask translateTask;
 
     public String getTranslatedText(){
         return translated_text;
     }
 
-    public void setTranslatedText(String text){
-        this.translated_text = text;
-    }
-
-    public void setLang(String lang) {
-        Translator.lang = lang;
-    }
-
     public String getCode() {
-        return Translator.code;
+        return this.code;
     }
 
     public String getLang() {
-        return Translator.lang;
+        return this.lang;
     }
 
-    public int getCodeLangIndex(String s){
-        return code_langs.indexOf(s);
+    public static int getCodeLangIndex(String s){
+        return Translator.code_langs.indexOf(s);
     }
 
-    public void getLangs(TranslationPresenter p){
+    public void getLangs(MainMVP.LangsCallBack callBack){
         GetLangs getLangs = new GetLangs();
         getLangs.start();
         try {
             getLangs.join();
-        }catch (InterruptedException ie){}
+        }catch (InterruptedException ie){ return; }
 
         try {
             JSONParser parser = new JSONParser();
@@ -90,7 +80,7 @@ public class Translator {
             langs_from.addAll(langs);
             langs_from.add(0, "Автоматически");
 
-            p.getLangsCallBack();
+            callBack.onLangsLoaded();
         }catch(ParseException e){
             System.out.println(e.getMessage());
             e.printStackTrace();
@@ -99,7 +89,7 @@ public class Translator {
         }
     }
 
-    private static class GetLangs extends Thread{
+    private class GetLangs extends Thread{
         String result;
 
         @Override
@@ -108,46 +98,61 @@ public class Translator {
         }
     }
 
-    public void translate(String text, int lang_from_index, int target_lang_index){
-        Translate translate = new Translate(text, lang_from_index, target_lang_index);
-        translate.start();
-        try {
-            translate.join();
-        }catch (InterruptedException ie){}
+    public void translate(MainMVP.TranslateCallBack callBack, String text, int lang_from_index, int target_lang_index){
+        if(translateTask != null && translateTask.getStatus().equals(AsyncTask.Status.RUNNING)) {
+            translateTask.cancel(true);
+        }
 
-        parseJSON_translate(translate.result);
+        translateTask = new TranslateTask(callBack, lang_from_index, target_lang_index);
+        translateTask.execute(text);
     }
 
-    private class Translate extends Thread{
-        String result;
-        int lang_from_index, target_lang_index;
+    private class TranslateTask extends AsyncTask<String, Void, Void>{
+        MainMVP.TranslateCallBack callBack;
+        int lang_from_index;
+        int target_lang_index;
 
-        public Translate(String text, int lang_from_index, int target_lang_index){
-            text_to_translate = text;
+        private TranslateTask(MainMVP.TranslateCallBack callBack, int lang_from_index, int target_lang_index){
+            this.callBack = callBack;
             this.lang_from_index = lang_from_index;
             this.target_lang_index = target_lang_index;
         }
 
         @Override
-        public void run() {
+        protected void onPreExecute() {}
+
+        @Override
+        protected Void doInBackground(String... text) {
             try {
+                if(text[0].isEmpty()) {
+                    translated_text = "";
+                    callBack.onSuccessTranslate();
+                    return null;
+                }
                 String baseURL = "https://translate.yandex.net/api/v1.5/tr.json/translate?";
                 String API_key = "trnsl.1.1.20170421T155302Z.72626cd8e3e77068.a727cb302d6818222e7afcfa360f4d51efe2f25d";
-                String to_translate = URLEncoder.encode(text_to_translate, "UTF-8");
+                String to_translate = URLEncoder.encode(text[0], "UTF-8");
                 String lang;
                 if(lang_from_index == 0) {
                     lang = code_langs.get(target_lang_index);
                 }else{
                     lang = code_langs.get(lang_from_index-1)+"-"+code_langs.get(target_lang_index);
                 }
-                result = request(baseURL + "key=" + API_key + "&text=" + to_translate + "&lang=" + lang);
+                if(isCancelled()) return null;
+                String result = request(baseURL + "key=" + API_key + "&text=" + to_translate + "&lang=" + lang);
+                parseJSON_translate(result);
             }catch(UnsupportedEncodingException e){
                 System.out.println(e.getMessage());
                 e.printStackTrace();
             }catch(Exception e){
-                System.out.println("An error was occurred");
                 e.printStackTrace();
             }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            callBack.onSuccessTranslate();
         }
     }
 
@@ -158,8 +163,6 @@ public class Translator {
             translated_text = ((JSONArray)jobj.get("text")).get(0).toString();
             code = jobj.get("code").toString();
             lang = jobj.get("lang").toString();
-        }catch(ParseException e){
-            e.printStackTrace();
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -186,7 +189,6 @@ public class Translator {
                 sb.append(buffer, 0, rc);
             reader.close();
 
-            //System.out.println(sb);
             return sb.toString();
         }catch(IOException e){
             System.out.println(e.getMessage());

@@ -18,11 +18,10 @@ public class FavoritesPresenter extends Presenter<Favorites, FavoritesView> {
     }
 
     private void putTranslate(int position){
-        Bundle bundle = new Bundle();
-        bundle.putInt(TranslateApplication.S_LANG_FROM, Translator.code_langs.indexOf(Favorites.lang_lang.get(position).substring(0, 2)) + 1);
-        bundle.putInt(TranslateApplication.S_LANG_TO, Translator.code_langs.indexOf(Favorites.lang_lang.get(position).substring(3, 5)));
+        Bundle bundle = view.getMainActivity().getBundle();
+        bundle.putInt(TranslateApplication.S_LANG_FROM, Translator.getCodeLangIndex(Favorites.lang_lang.get(position).substring(0, 2)) + 1);
+        bundle.putInt(TranslateApplication.S_LANG_TO, Translator.getCodeLangIndex(Favorites.lang_lang.get(position).substring(3, 5)));
         bundle.putString(TranslateApplication.S_TEXT, Favorites.translate_text.get(position));
-        view.getMainActivity().setArguments(bundle);
     }
 
     public void onItemClick(int position){

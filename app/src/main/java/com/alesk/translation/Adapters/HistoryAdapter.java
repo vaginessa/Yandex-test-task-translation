@@ -1,4 +1,4 @@
-package com.alesk.translation;
+package com.alesk.translation.Adapters;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.alesk.translation.Models.Favorites;
+import com.alesk.translation.R;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 

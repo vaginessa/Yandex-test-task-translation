@@ -26,6 +26,8 @@ import com.alesk.translation.Views.TranslationView;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 
+import java.util.ArrayList;
+
 public class TranslationFragment extends Fragment implements TranslationView {
     private TextView translated_text;
     private EditText to_translate;
@@ -92,6 +94,22 @@ public class TranslationFragment extends Fragment implements TranslationView {
         rights.setVisibility(c);
     }
 
+    public void setLangsFromAdapter(ArrayList langs){
+        lang_from_adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_item, langs);
+        lang_from_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        lang_from.setAdapter(lang_from_adapter);
+    }
+
+    public void setTargetLangsAdapter(ArrayList langs){
+        target_lang_adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_item, langs);
+        target_lang_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        target_lang.setAdapter(target_lang_adapter);
+    }
+
+    public void makeToast(String text){
+        Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,14 +133,6 @@ public class TranslationFragment extends Fragment implements TranslationView {
         res = (TextView) view.findViewById(R.id.resource);
         rights = (TextView) view.findViewById(R.id.rights);
         likeButton = (LikeButton) view.findViewById(R.id.like_button);
-
-        lang_from_adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_item, Translator.langs_from);
-        lang_from_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        lang_from.setAdapter(lang_from_adapter);
-
-        target_lang_adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_item, Translator.langs);
-        target_lang_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        target_lang.setAdapter(target_lang_adapter);
 
         mTranslationPresenter.initialize();
 
@@ -151,7 +161,6 @@ public class TranslationFragment extends Fragment implements TranslationView {
             @Override
             public void onClick(View v) {
                 mTranslationPresenter.onTranslatedTextClick();
-                Toast.makeText(getActivity(), "Перевод скопирован в буфер обмена", Toast.LENGTH_SHORT).show();
             }
         });
 

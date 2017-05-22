@@ -1,7 +1,5 @@
 package com.alesk.translation;
 
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -55,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         translationFragment = new TranslationFragment();
+        translationFragment.setArguments(new Bundle());
         setFragment(translationFragment, false);
     }
 
@@ -77,39 +76,16 @@ public class MainActivity extends AppCompatActivity {
         }else {
             f_transaction.add(R.id.content, fragment);
         }
+        f_transaction.addToBackStack(null);
         f_transaction.commit();
     }
 
-    public void setArguments(Bundle bundle){
-        translationFragment.setArguments(bundle);
+    public Bundle getBundle(){
+        return translationFragment.getArguments();
     }
 
     @Override
     public void onBackPressed(){
         finish();
-    }
-
-    public static boolean hasConnection()
-    {
-        try {
-            ConnectivityManager cm = (ConnectivityManager) TranslateApplication.getAppContext().getSystemService(
-                    TranslateApplication.CONNECTIVITY_SERVICE);
-            NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            if (wifiInfo != null && wifiInfo.isConnected()) {
-                return true;
-            }
-            wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-            if (wifiInfo != null && wifiInfo.isConnected()) {
-                return true;
-            }
-            wifiInfo = cm.getActiveNetworkInfo();
-            if (wifiInfo != null && wifiInfo.isConnected()) {
-                return true;
-            }
-            return false;
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return false;
     }
 }

@@ -2,6 +2,8 @@ package com.alesk.translation.Views;
 
 import android.content.Context;
 
+import java.util.ArrayList;
+
 /**
  * Created by Acer on 10-May-17.
  */
@@ -20,4 +22,7 @@ public interface TranslationView {
     void setRightsVisible(int c);
     void setLike(boolean like);
     boolean isLiked();
+    void makeToast(String text);
+    void setLangsFromAdapter(ArrayList langs);
+    void setTargetLangsAdapter(ArrayList langs);
 }

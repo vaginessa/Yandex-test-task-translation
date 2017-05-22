@@ -1,4 +1,4 @@
-package com.alesk.translation;
+package com.alesk.translation.Adapters;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.alesk.translation.Models.Favorites;
+import com.alesk.translation.R;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 
@@ -22,6 +23,7 @@ public class FavoritesAdapter extends ArrayAdapter<String> {
     private final ArrayList<String> translate_text;
     private final ArrayList<String> translated_text;
     private final ArrayList<String> lang_lang;
+    private ArrayList<Integer> is_unliked = new ArrayList<>();
 
     public FavoritesAdapter(Activity context, ArrayList<String> translate_text, ArrayList<String> translated_text,
                           ArrayList<String> lang_lang) {
@@ -40,8 +42,8 @@ public class FavoritesAdapter extends ArrayAdapter<String> {
     }
 
     @Override
-    public View getView(int position, View view, ViewGroup parent) {
-        ViewHolder viewHolder;
+    public View getView(final int position, View view, ViewGroup parent) {
+        final ViewHolder viewHolder;
         final int index = position;
 
         if(view == null) {
@@ -60,19 +62,22 @@ public class FavoritesAdapter extends ArrayAdapter<String> {
         viewHolder.translate_txt.setText(translate_text.get(position));
         viewHolder.translated_txt.setText(translated_text.get(position));
         viewHolder.lng_lng.setText(lang_lang.get(position));
-        viewHolder.likeButton.setLiked(true);
+        if(is_unliked.contains(position)) viewHolder.likeButton.setLiked(false);
+        else viewHolder.likeButton.setLiked(true);
 
         viewHolder.likeButton.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
                 Favorites.addToFavorites(translate_text.get(index), translated_text.get(index),
                         lang_lang.get(index));
+                is_unliked.remove(is_unliked.indexOf(position));
             }
 
             @Override
             public void unLiked(LikeButton likeButton) {
                 Favorites.removeFromFavorites(translate_text.get(index),
                         lang_lang.get(index));
+                is_unliked.add(position);
             }
         });
 
