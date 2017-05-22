@@ -21,57 +21,38 @@ public class History {
     public static ArrayList<Boolean> fav = new ArrayList<>();
 
     public static void addToHistory(String text_to_translate, String translated_text, String lang, boolean is_favorite) {
-        AddToHistoryThread addToHistoryThread = new AddToHistoryThread(
-                text_to_translate, translated_text, lang, is_favorite);
-        addToHistoryThread.start();
-    }
+        try {
+            if ((!translated_text.isEmpty() && !lang.isEmpty()) && TranslateApplication.hasConnection()) {
 
-    private static class AddToHistoryThread extends Thread{
-        String text_to_translate, translated_text, lang;
-        boolean is_favorite;
+                SQLiteDatabase database = MainActivity.dbHelper.getWritableDatabase();
+                Cursor cursor = database.query(DBHelper.TABLE_HISTORY,null,null,null,null,null,null);
+                int to_index = cursor.getColumnIndex(DBHelper.KEY_TO_TRANSLATE);
+                int lang_index = cursor.getColumnIndex(DBHelper.KEY_LANG);
 
-        private AddToHistoryThread(String text_to_translate, String translated_text, String lang, boolean is_favorite){
-            this.text_to_translate = text_to_translate;
-            this.translated_text = translated_text;
-            this.lang = lang;
-            this.is_favorite = is_favorite;
-        }
-
-        @Override
-        public void run() {
-            try {
-                if ((!translated_text.isEmpty() && !lang.isEmpty()) && TranslateApplication.hasConnection()) {
-
-                    SQLiteDatabase database = MainActivity.dbHelper.getWritableDatabase();
-                    Cursor cursor = database.query(DBHelper.TABLE_HISTORY,null,null,null,null,null,null);
-                    int to_index = cursor.getColumnIndex(DBHelper.KEY_TO_TRANSLATE);
-                    int lang_index = cursor.getColumnIndex(DBHelper.KEY_LANG);
-
-                    if(cursor.moveToLast()){
-                        if(cursor.getString(to_index).equals(text_to_translate) && cursor.getString(lang_index).equals(lang)) {
-                            cursor.close();
-                            return;
-                        }
+                if(cursor.moveToLast()){
+                    if(cursor.getString(to_index).equals(text_to_translate) && cursor.getString(lang_index).equals(lang)) {
+                        cursor.close();
+                        return;
                     }
-
-                    ContentValues contentValues = new ContentValues();
-                    contentValues.put(DBHelper.KEY_TO_TRANSLATE, text_to_translate);
-                    contentValues.put(DBHelper.KEY_TRANSLATED, translated_text);
-                    contentValues.put(DBHelper.KEY_LANG, lang);
-                    contentValues.put(DBHelper.KEY_IS_FAVORITE, is_favorite ? "true" : "false");
-
-                    database.insert(DBHelper.TABLE_HISTORY, null, contentValues);
-
-                    History.translate_text.add(0, text_to_translate);
-                    History.translated_text.add(0, translated_text);
-                    History.lang_lang.add(0, lang);
-                    History.fav.add(0, is_favorite);
-
-                    MainActivity.dbHelper.close();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(DBHelper.KEY_TO_TRANSLATE, text_to_translate);
+                contentValues.put(DBHelper.KEY_TRANSLATED, translated_text);
+                contentValues.put(DBHelper.KEY_LANG, lang);
+                contentValues.put(DBHelper.KEY_IS_FAVORITE, is_favorite ? "true" : "false");
+
+                database.insert(DBHelper.TABLE_HISTORY, null, contentValues);
+
+                History.translate_text.add(0, text_to_translate);
+                History.translated_text.add(0, translated_text);
+                History.lang_lang.add(0, lang);
+                History.fav.add(0, is_favorite);
+
+                MainActivity.dbHelper.close();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
