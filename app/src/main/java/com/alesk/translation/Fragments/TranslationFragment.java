@@ -52,8 +52,10 @@ public class TranslationFragment extends Fragment implements TranslationView {
     }
 
     public void notifySpinnerAdapters(){
-        lang_from_adapter.notifyDataSetChanged();
-        target_lang_adapter.notifyDataSetChanged();
+        if(lang_from_adapter != null && target_lang_adapter != null) {
+            lang_from_adapter.notifyDataSetChanged();
+            target_lang_adapter.notifyDataSetChanged();
+        }
     }
 
     public int getLangFromItemPosition() {
@@ -73,7 +75,7 @@ public class TranslationFragment extends Fragment implements TranslationView {
     }
 
     public String getTextToTranslate(){
-        return to_translate.getText().toString();
+        return to_translate.getText().toString().trim();
     }
 
     public void setTextToTranslate(String text){
@@ -117,6 +119,7 @@ public class TranslationFragment extends Fragment implements TranslationView {
         mTranslationPresenter = new TranslationPresenter();
         mTranslationPresenter.initializeModel(new Translator());
         mTranslationPresenter.bindView(this);
+        mTranslationPresenter.initialize();
     }
 
     @Override
@@ -134,7 +137,7 @@ public class TranslationFragment extends Fragment implements TranslationView {
         rights = (TextView) view.findViewById(R.id.rights);
         likeButton = (LikeButton) view.findViewById(R.id.like_button);
 
-        mTranslationPresenter.initialize();
+        mTranslationPresenter.onCreateView();
 
         lang_from.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

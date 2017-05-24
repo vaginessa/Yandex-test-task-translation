@@ -14,6 +14,7 @@ public final class TranslateApplication extends Application {
     public static final String S_LANG_TO = "Last_lang_to";
     public static final String S_LANG_FROM = "Last_lang_from";
     public static final String S_TEXT = "Last_to_translate";
+    public static final String S_TEXT_TRANSLATED = "Last_translated";
 
     @Override
     public void onCreate() {

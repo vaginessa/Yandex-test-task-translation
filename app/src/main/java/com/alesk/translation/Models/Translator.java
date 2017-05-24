@@ -1,7 +1,12 @@
 package com.alesk.translation.Models;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 
+import com.alesk.translation.DBHelper;
+import com.alesk.translation.MainActivity;
 import com.alesk.translation.MainMVP;
 
 import org.json.simple.JSONArray;
@@ -34,6 +39,9 @@ public class Translator {
     private String lang;
     private TranslateTask translateTask;
 
+    public void setLangs(String langs){
+    }
+
     public String getTranslatedText(){
         return translated_text;
     }
@@ -50,7 +58,7 @@ public class Translator {
         return Translator.code_langs.indexOf(s);
     }
 
-    public void getLangs(MainMVP.LangsCallBack callBack){
+    public void requestLangs(MainMVP.LangsCallBack callBack){
         GetLangs getLangs = new GetLangs();
         getLangs.start();
         try {
@@ -80,6 +88,7 @@ public class Translator {
             langs_from.addAll(langs);
             langs_from.add(0, "Автоматически");
 
+            cacheLangs();
             callBack.onLangsLoaded();
         }catch(ParseException e){
             System.out.println(e.getMessage());
@@ -89,6 +98,25 @@ public class Translator {
         }
     }
 
+    private void cacheLangs(){
+        SQLiteDatabase database = MainActivity.dbHelper.getWritableDatabase();
+        Cursor c = database.rawQuery("SELECT  * FROM " + DBHelper.TABLE_LANGS, null);
+
+        if(c.getCount() < langs.size()) {
+            database.delete(DBHelper.TABLE_LANGS, null, null);
+            ContentValues contentValues = new ContentValues();
+
+            for (int i = 0; i < code_langs.size(); i++) {
+                contentValues.put(DBHelper.KEY_LANG, code_langs.get(i));
+                contentValues.put(DBHelper.KEY_VALUE, langs.get(i));
+                database.insert(DBHelper.TABLE_LANGS, null, contentValues);
+            }
+        }
+
+        c.close();
+        MainActivity.dbHelper.close();
+    }
+
     private class GetLangs extends Thread{
         String result;
 
@@ -96,6 +124,26 @@ public class Translator {
         public void run() {
             result = requestLangs();
         }
+    }
+
+    public void loadLangsFromCache(){
+        SQLiteDatabase database = MainActivity.dbHelper.getWritableDatabase();
+        Cursor cursor = database.query(DBHelper.TABLE_LANGS,null,null,null,null,null,null);
+        int langs_index = cursor.getColumnIndex(DBHelper.KEY_LANG);
+        int value_index = cursor.getColumnIndex(DBHelper.KEY_VALUE);
+
+        if (cursor.moveToFirst()) {
+            do {
+                code_langs.add(cursor.getString(langs_index));
+                langs.add(cursor.getString(value_index));
+            } while (cursor.moveToNext());
+        }
+
+        langs_from.addAll(langs);
+        langs_from.add(0, "Автоматически");
+
+        cursor.close();
+        MainActivity.dbHelper.close();
     }
 
     public void translate(MainMVP.TranslateCallBack callBack, String text, int lang_from_index, int target_lang_index){

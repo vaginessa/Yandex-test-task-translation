@@ -38,7 +38,8 @@ public class HistoryAdapter extends ArrayAdapter<String>{
     static class ViewHolder{
         TextView translate_txt;
         TextView translated_txt;
-        TextView lng_lng;
+        TextView lng_from;
+        TextView lng_to;
         LikeButton likeButton;
     }
 
@@ -53,7 +54,8 @@ public class HistoryAdapter extends ArrayAdapter<String>{
             viewHolder = new ViewHolder();
             viewHolder.translate_txt = (TextView) view.findViewById(R.id.translate_text);
             viewHolder.translated_txt = (TextView) view.findViewById(R.id.translated_text);
-            viewHolder.lng_lng = (TextView) view.findViewById(R.id.lang_lang);
+            viewHolder.lng_from = (TextView) view.findViewById(R.id.from_lng);
+            viewHolder.lng_to = (TextView) view.findViewById(R.id.to_lng);
             viewHolder.likeButton = (LikeButton) view.findViewById(R.id.like_button);
             view.setTag(viewHolder);
         }else{
@@ -62,7 +64,8 @@ public class HistoryAdapter extends ArrayAdapter<String>{
 
         viewHolder.translate_txt.setText(translate_text.get(position));
         viewHolder.translated_txt.setText(translated_text.get(position));
-        viewHolder.lng_lng.setText(lang_lang.get(position));
+        viewHolder.lng_from.setText(lang_lang.get(position).substring(0,2));
+        viewHolder.lng_to.setText(lang_lang.get(position).substring(3,5));
         viewHolder.likeButton.setLiked(fav.get(position));
 
         viewHolder.likeButton.setOnLikeListener(new OnLikeListener() {

@@ -23,20 +23,19 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class TranslationPresenter extends Presenter<Translator, TranslationView>
         implements MainMVP.TranslateCallBack, MainMVP.LangsCallBack {
-    private boolean need_update;
 
     public void initialize(){
-        if(!TranslateApplication.hasConnection()) {
-            view.setTranslatedText(TranslateApplication.getAppContext().getString(R.string.no_connection));
-            need_update = true;
-        }else{
-            view.setLangsFromAdapter(model.langs_from);
-            view.setTargetLangsAdapter(model.langs);
-            model.getLangs(this);
-            SharedPreferences sPref = TranslateApplication.getAppContext().getSharedPreferences(TranslateApplication.getAppContext().getString(R.string.Prefs_name), MODE_PRIVATE);
-            view.setTextToTranslate(sPref.getString(TranslateApplication.S_TEXT, ""));
-            view.setTargetLangItemPosition(sPref.getInt(TranslateApplication.S_LANG_TO, 0));
-        }
+        if(TranslateApplication.hasConnection()) model.requestLangs(this);
+        else model.loadLangsFromCache();
+    }
+
+    public void onCreateView(){
+        view.setLangsFromAdapter(model.langs_from);
+        view.setTargetLangsAdapter(model.langs);
+        SharedPreferences sPref = TranslateApplication.getAppContext().getSharedPreferences(TranslateApplication.getAppContext().getString(R.string.Prefs_name), MODE_PRIVATE);
+        view.setTextToTranslate(sPref.getString(TranslateApplication.S_TEXT, ""));
+        view.setTargetLangItemPosition(sPref.getInt(TranslateApplication.S_LANG_TO, 0));
+        view.setTranslatedText(sPref.getString(TranslateApplication.S_TEXT_TRANSLATED, ""));
     }
 
     private void saveText(){
@@ -44,6 +43,7 @@ public class TranslationPresenter extends Presenter<Translator, TranslationView>
                 TranslateApplication.getAppContext().getString(R.string.Prefs_name), MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();
         ed.putString(TranslateApplication.S_TEXT, view.getTextToTranslate());
+        ed.putString(TranslateApplication.S_TEXT_TRANSLATED, view.getTranslatedText());
         ed.apply();
     }
 
@@ -64,26 +64,10 @@ public class TranslationPresenter extends Presenter<Translator, TranslationView>
     }
 
     public void afterTextChanged(){
-        boolean has_connection = false;
-
-        try {
-            has_connection = TranslateApplication.hasConnection();
-            if (need_update && has_connection) {
-                model.getLangs(this);
-                view.setTargetLangItemPosition(TranslateApplication.getAppContext().getSharedPreferences(
-                        TranslateApplication.getAppContext().getString(R.string.Prefs_name), MODE_PRIVATE)
-                        .getInt(TranslateApplication.S_LANG_TO, 0));
-                need_update = false;
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
-        if (has_connection) {
+        if (TranslateApplication.hasConnection()) {
             model.translate(this, view.getTextToTranslate(), view.getLangFromItemPosition(), view.getTargetLangItemPosition());
         } else {
             view.setRightsVisible(View.INVISIBLE);
-            need_update = true;
             view.setTranslatedText(TranslateApplication.getAppContext().getString(R.string.no_connection));
             view.setLike(false);
         }
@@ -97,16 +81,22 @@ public class TranslationPresenter extends Presenter<Translator, TranslationView>
             view.setTargetLangItemPosition(tmp - 1);
         } else {
             view.setLangFromItemPosition(view.getTargetLangItemPosition() + 1);
-            if(!view.getTextToTranslate().isEmpty()) {
+            if(!view.getTextToTranslate().isEmpty() && TranslateApplication.hasConnection()) {
                 view.setTargetLangItemPosition(Translator.getCodeLangIndex(model.getLang().substring(0, 2)));
-            }else{
+            } else {
                 view.setTargetLangItemPosition(TranslateApplication.getAppContext().getSharedPreferences(
                         TranslateApplication.getAppContext().getString(R.string.Prefs_name), MODE_PRIVATE)
                         .getInt(TranslateApplication.S_LANG_FROM, 1) - 1);
             }
         }
 
-        view.setTextToTranslate(view.getTranslatedText());
+        if(!TranslateApplication.hasConnection()){
+            String buff = view.getTextToTranslate();
+            view.setTextToTranslate(view.getTranslatedText());
+            view.setTranslatedText(buff);
+        }else{
+            view.setTextToTranslate(view.getTranslatedText());
+        }
     }
 
     public void onDeleteButtonClick(){
@@ -145,13 +135,15 @@ public class TranslationPresenter extends Presenter<Translator, TranslationView>
     }
 
     public void onListItemSelected(){
-        model.translate(this, view.getTextToTranslate(), view.getLangFromItemPosition(), view.getTargetLangItemPosition());
+        if(TranslateApplication.hasConnection()) {
+            model.translate(this, view.getTextToTranslate(), view.getLangFromItemPosition(), view.getTargetLangItemPosition());
+            History.addToHistory(view.getTextToTranslate(), view.getTranslatedText(), model.getLang(), view.isLiked());
+        }
         saveLangs();
-        History.addToHistory(view.getTextToTranslate(), view.getTranslatedText(), model.getLang(), view.isLiked());
     }
 
     public void onTranslatedTextClick(){
-        if(TranslateApplication.hasConnection()) {
+        if(TranslateApplication.hasConnection() && !view.getTranslatedText().isEmpty()) {
             copyToBuffer(view.getTranslatedText());
             view.makeToast("Перевод скопирован в буфер обмена");
         }
