@@ -160,13 +160,6 @@ public class TranslationFragment extends Fragment implements TranslationView {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        translated_text.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mTranslationPresenter.onTranslatedTextClick();
-            }
-        });
-
         to_translate.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -212,6 +205,16 @@ public class TranslationFragment extends Fragment implements TranslationView {
             @Override
             public void unLiked(LikeButton likeButton) {
                 mTranslationPresenter.onUnliked();
+            }
+        });
+
+        view.findViewById(R.id.copy_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!getTranslatedText().isEmpty()) {
+                    mTranslationPresenter.copyToBuffer(getTranslatedText());
+                    makeToast("Перевод скопирован в буфер обмена");
+                }
             }
         });
 

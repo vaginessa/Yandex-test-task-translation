@@ -57,7 +57,7 @@ public class TranslationPresenter extends Presenter<Translator, TranslationView>
         ed.apply();
     }
 
-    private void copyToBuffer(String text){
+    public void copyToBuffer(String text){
         ClipboardManager clipboard = (ClipboardManager) view.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("", text);
         clipboard.setPrimaryClip(clip);
@@ -140,13 +140,6 @@ public class TranslationPresenter extends Presenter<Translator, TranslationView>
             History.addToHistory(view.getTextToTranslate(), view.getTranslatedText(), model.getLang(), view.isLiked());
         }
         saveLangs();
-    }
-
-    public void onTranslatedTextClick(){
-        if(TranslateApplication.hasConnection() && !view.getTranslatedText().isEmpty()) {
-            copyToBuffer(view.getTranslatedText());
-            view.makeToast("Перевод скопирован в буфер обмена");
-        }
     }
 
     public void onLangsLoaded(){
