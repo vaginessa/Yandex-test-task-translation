@@ -9,14 +9,57 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/colorPrimary"
+                android:minHeight="?attr/actionBarSize"
+                android:theme="?attr/actionBarTheme">
+
+                <Spinner
+                    android:id="@+id/lang_from"
+                    android:layout_width="260dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:paddingEnd="5dp"
+                    android:textAlignment="textEnd" />
+
+                <ImageButton
+                    android:id="@+id/switch_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:src="@mipmap/ic_swap_horizontal" />
+
+                <Spinner
+                    android:id="@+id/lang_to"
+                    android:layout_width="260dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:paddingLeft="5dp"
+                    android:textAlignment="textStart" />
+
+            </android.support.v7.widget.Toolbar>
+        </android.support.design.widget.AppBarLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/rights"
-            android:layout_below="@+id/toolbar"
+            android:layout_toLeftOf="@+id/like_button"
             android:layout_toStartOf="@+id/like_button"
             android:orientation="horizontal"
-            android:layout_toLeftOf="@+id/like_button">
+            android:id="@+id/linearLayout"
+            android:layout_below="@+id/appBarLayout">
 
             <EditText
                 android:id="@+id/to_translate"
@@ -72,62 +115,27 @@
             android:id="@+id/like_button"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/delete_button"
             android:layout_gravity="right"
             app:icon_size="25dp"
-            app:icon_type="star" />
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:minHeight="?attr/actionBarSize"
-            android:theme="?attr/actionBarTheme">
-
-            <Spinner
-                android:id="@+id/lang_from"
-                android:layout_width="260dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@android:color/transparent"
-                android:paddingEnd="5dp"
-                android:textAlignment="textEnd" />
-
-            <ImageButton
-                android:id="@+id/switch_button"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:background="@android:color/transparent"
-                android:src="@mipmap/ic_swap_horizontal" />
-
-            <Spinner
-                android:id="@+id/lang_to"
-                android:layout_width="260dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@android:color/transparent"
-                android:paddingLeft="5dp"
-                android:textAlignment="textStart" />
-
-        </android.support.v7.widget.Toolbar>
+            app:icon_type="star"
+            android:layout_below="@+id/delete_button"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
         <ImageButton
             android:id="@+id/delete_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/like_button"
-            android:layout_alignRight="@+id/like_button"
-            android:layout_below="@+id/toolbar"
             android:layout_gravity="right"
-            android:layout_marginRight="14dp"
-            android:layout_marginTop="8dp"
             android:adjustViewBounds="false"
             android:background="@android:color/transparent"
-            app:srcCompat="@mipmap/ic_close" />
+            app:srcCompat="@mipmap/ic_close"
+            android:layout_below="@+id/appBarLayout"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="13dp"
+            android:layout_toRightOf="@+id/linearLayout"
+            android:layout_toEndOf="@+id/linearLayout" />
 
         <TextView
             android:id="@+id/resource"
@@ -150,13 +158,15 @@
             android:id="@+id/copy_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/delete_button"
-            android:layout_alignStart="@+id/delete_button"
-            android:layout_below="@+id/like_button"
             android:background="@android:color/transparent"
             android:scaleX="0.9"
             android:scaleY="0.9"
-            app:srcCompat="@mipmap/ic_content_copy" />
+            app:srcCompat="@mipmap/ic_content_copy"
+            android:layout_alignRight="@+id/like_button"
+            android:layout_alignEnd="@+id/like_button"
+            android:layout_alignLeft="@+id/like_button"
+            android:layout_alignStart="@+id/like_button"
+            android:layout_below="@+id/like_button" />
     </RelativeLayout>
 
 </FrameLayout>
