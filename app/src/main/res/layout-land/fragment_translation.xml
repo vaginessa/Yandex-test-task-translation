@@ -151,7 +151,7 @@
             android:enabled="true"
             android:singleLine="false"
             android:text="@string/yandex_translate_full"
-            android:textColor="@color/href"
+            android:textColor="@color/colorAccent"
             android:visibility="invisible" />
 
         <ImageButton

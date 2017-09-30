@@ -6,7 +6,10 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+    </style>
+
+    <style name="BottomNavigationViewTheme">
+        <item name="android:colorPrimary" tools:targetApi="lollipop">@color/colorPrimaryDark</item>
     </style>
 
 </resources>
