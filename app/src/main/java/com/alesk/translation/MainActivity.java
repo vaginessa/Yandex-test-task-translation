@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
     private FavoritesFragment favoritesFragment;
     private HistoryFragment historyFragment;
     public static DBHelper dbHelper;
-    public static RichBottomNavigationView navigation;
+    public static BottomNavigationView navigation;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         dbHelper = new DBHelper(this);
 
-        navigation = (RichBottomNavigationView) findViewById(R.id.navigation);
+        navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         translationFragment = new TranslationFragment();
@@ -60,13 +60,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("active tab", navigation.getSelectedItem());
+        outState.putInt("active tab", navigation.getSelectedItemId());
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        navigation.setSelectedItem(savedInstanceState.getInt("active tab"));
+        navigation.setSelectedItemId(savedInstanceState.getInt("active tab"));
     }
 
     private void setFragment(Fragment fragment, boolean is_replace){

@@ -16,12 +16,13 @@
 
     </FrameLayout>
 
-    <com.alesk.translation.RichBottomNavigationView
+    <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:elevation="0dp"
+        android:background="@android:color/white"
+        android:elevation="8dp"
         app:menu="@menu/navigation" />
 
 </LinearLayout>

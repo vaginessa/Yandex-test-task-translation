@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.alesk.translation.MainActivity;
 import com.alesk.translation.Models.History;
 import com.alesk.translation.Models.Translator;
+import com.alesk.translation.R;
 import com.alesk.translation.TranslateApplication;
 import com.alesk.translation.Views.HistoryView;
 
@@ -26,6 +27,6 @@ public class HistoryPresenter extends Presenter<History, HistoryView>{
 
     public void onItemClick(int position){
         putTranslate(position);
-        MainActivity.navigation.setSelectedItem(0);
+        MainActivity.navigation.setSelectedItemId(R.id.navigation_home);
     }
 }
