@@ -8,8 +8,4 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="BottomNavigationViewTheme">
-        <item name="android:colorPrimary" tools:targetApi="lollipop">@color/colorPrimaryDark</item>
-    </style>
-
 </resources>
