@@ -1,172 +1,182 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.alesk.translation.Fragments.TranslationFragment">
+    tools:context="com.alesk.translation.Fragments.TranslationFragment"
+    android:orientation="vertical">
 
-    <RelativeLayout
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/appBarLayout"
+        android:layout_height="wrap_content">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
+            <Spinner
+                android:id="@+id/lang_from"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:background="?attr/colorPrimary"
-                android:minHeight="?attr/actionBarSize"
-                android:theme="?attr/actionBarTheme">
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:paddingEnd="5dp"
+                android:textAlignment="textEnd" />
 
-                <Spinner
-                    android:id="@+id/lang_from"
-                    android:layout_width="260dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="@android:color/transparent"
-                    android:paddingEnd="5dp"
-                    android:textAlignment="textEnd" />
+            <ImageButton
+                android:id="@+id/switch_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:src="@mipmap/ic_swap_horizontal" />
 
-                <ImageButton
-                    android:id="@+id/switch_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:background="@android:color/transparent"
-                    android:src="@mipmap/ic_swap_horizontal" />
+            <Spinner
+                android:id="@+id/lang_to"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:paddingLeft="5dp"
+                android:textAlignment="textStart" />
 
-                <Spinner
-                    android:id="@+id/lang_to"
-                    android:layout_width="260dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="@android:color/transparent"
-                    android:paddingLeft="5dp"
-                    android:textAlignment="textStart" />
 
-            </android.support.v7.widget.Toolbar>
-        </android.support.design.widget.AppBarLayout>
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
 
-        <LinearLayout
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/rights"
-            android:layout_toLeftOf="@+id/like_button"
-            android:layout_toStartOf="@+id/like_button"
-            android:orientation="horizontal"
-            android:id="@+id/linearLayout"
-            android:layout_below="@+id/appBarLayout">
+            android:layout_margin="4dp"
+            android:layout_weight="1">
 
             <EditText
                 android:id="@+id/to_translate"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/toolbar"
-                android:layout_gravity="top|bottom"
-                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:elevation="0dp"
+                android:ems="10"
                 android:gravity="top"
+                android:hint="Введите текст для перевода"
                 android:inputType="textMultiLine"
+                android:paddingBottom="4dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:paddingTop="8dp"
                 android:textSize="20sp" />
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="4dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_gravity="bottom"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/rights"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginLeft="4dp"
+                    android:layout_weight="0"
+                    android:text="Переведено сервисом "
+                    android:textSize="14sp"
+                    android:visibility="invisible" />
+
+                <TextView
+                    android:id="@+id/resource"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_weight="1"
+                    android:autoLink="web"
+                    android:elevation="0dp"
+                    android:enabled="true"
+                    android:singleLine="false"
+                    android:text="«Яндекс.Переводчик»"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                    android:visibility="invisible" />
+
+            </LinearLayout>
 
             <ScrollView
                 android:id="@+id/scroll"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_alignTop="@+id/delete_button"
-                android:layout_gravity="top|bottom|right"
-                android:layout_toLeftOf="@+id/like_button"
-                android:layout_toStartOf="@+id/like_button"
-                android:layout_weight="1"
-                android:paddingTop="3dp">
+                android:layout_marginBottom="16dp"
+                android:layout_marginRight="50dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:weightSum="1">
 
                     <TextView
                         android:id="@+id/translated_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginTop="5dp"
                         android:isScrollContainer="false"
+                        android:paddingBottom="4dp"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:paddingTop="8dp"
                         android:textSize="22sp" />
                 </LinearLayout>
             </ScrollView>
 
-        </LinearLayout>
+            <ImageButton
+                android:id="@+id/delete_button"
+                android:layout_width="53dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginTop="8dp"
+                android:adjustViewBounds="false"
+                android:background="@android:color/transparent"
+                app:srcCompat="@mipmap/ic_close" />
 
-        <TextView
-            android:id="@+id/rights"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:text="Переведено сервисом «Яндекс.Переводчик»"
-            android:visibility="invisible" />
+            <com.like.LikeButton
+                android:id="@+id/like_button"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="right"
+                android:layout_marginRight="-4dp"
+                android:layout_marginTop="36dp"
+                app:icon_size="25dp"
+                app:icon_type="star" />
 
-        <com.like.LikeButton
-            android:id="@+id/like_button"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_gravity="right"
-            app:icon_size="25dp"
-            app:icon_type="star"
-            android:layout_below="@+id/delete_button"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            <ImageButton
+                android:id="@+id/copy_button"
+                android:layout_width="47dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginTop="94dp"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                android:scaleX="0.9"
+                android:scaleY="0.9"
+                app:srcCompat="@mipmap/ic_content_copy" />
 
-        <ImageButton
-            android:id="@+id/delete_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:adjustViewBounds="false"
-            android:background="@android:color/transparent"
-            app:srcCompat="@mipmap/ic_close"
-            android:layout_below="@+id/appBarLayout"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="13dp"
-            android:layout_toRightOf="@+id/linearLayout"
-            android:layout_toEndOf="@+id/linearLayout" />
+        </android.support.v7.widget.CardView>
 
-        <TextView
-            android:id="@+id/resource"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_toEndOf="@+id/rights"
-            android:layout_toRightOf="@+id/rights"
-            android:autoLink="web"
-            android:elevation="0dp"
-            android:enabled="true"
-            android:singleLine="false"
-            android:text="@string/yandex_translate_full"
-            android:textColor="@color/colorAccent"
-            android:visibility="invisible" />
+    </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/copy_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:scaleX="0.9"
-            android:scaleY="0.9"
-            app:srcCompat="@mipmap/ic_content_copy"
-            android:layout_alignRight="@+id/like_button"
-            android:layout_alignEnd="@+id/like_button"
-            android:layout_alignLeft="@+id/like_button"
-            android:layout_alignStart="@+id/like_button"
-            android:layout_below="@+id/like_button" />
-    </RelativeLayout>
-
-</FrameLayout>
+</LinearLayout>
