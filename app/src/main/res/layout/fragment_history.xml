@@ -10,33 +10,25 @@
         android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/history_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:layout_weight="1"
             app:layout_scrollFlags="scroll|enterAlways"
-            app:title="История"></android.support.v7.widget.Toolbar>
+            app:title="История"
+            tools:targetApi="lollipop" />
 
     </android.support.design.widget.AppBarLayout>
 
-    <FrameLayout
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/history_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:nestedScrollingEnabled="true"
+        android:persistentDrawingCache="scrolling"
+        android:scrollingCache="true"
+        app:layoutManager="LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context="com.alesk.translation.Fragments.HistoryFragment">
-
-        <!-- TODO: Update blank fragment layout -->
-
-        <ListView
-            android:id="@+id/history_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:nestedScrollingEnabled="true"
-            android:persistentDrawingCache="scrolling"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:scrollingCache="true" />
-    </FrameLayout>
+        tools:listitem="@layout/list_item" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -81,4 +81,14 @@ public class History {
         cursor.close();
         MainActivity.dbHelper.close();
     }
+
+    public void deleteHistory(){
+        SQLiteDatabase database = MainActivity.dbHelper.getWritableDatabase();
+        database.delete(DBHelper.TABLE_HISTORY, null, null);
+
+        translate_text.clear();
+        translated_text.clear();
+        lang_lang.clear();
+        fav.clear();
+    }
 }

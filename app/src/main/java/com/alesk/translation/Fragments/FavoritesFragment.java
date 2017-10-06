@@ -3,13 +3,13 @@ package com.alesk.translation.Fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
 import com.alesk.translation.Adapters.FavoritesAdapter;
 import com.alesk.translation.MainActivity;
@@ -20,7 +20,7 @@ import com.alesk.translation.Views.FavoritesView;
 
 public class FavoritesFragment extends Fragment implements FavoritesView {
     private FavoritesPresenter mFavoritesPresenter;
-    private ListView listView;
+    private RecyclerView recyclerView;
     private static Parcelable state;
 
     @Override
@@ -33,34 +33,24 @@ public class FavoritesFragment extends Fragment implements FavoritesView {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        if(state != null)
-            listView.onRestoreInstanceState(state);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_favorites, container, false);
 
         mFavoritesPresenter.initialize();
-        listView = (ListView) view.findViewById(R.id.favorites_list);
-        FavoritesAdapter adapter = new FavoritesAdapter(getActivity(), Favorites.translate_text, Favorites.translated_text, Favorites.lang_lang);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    mFavoritesPresenter.onItemClick(position);
-                }
-            });
+        recyclerView = view.findViewById(R.id.favorites_list);
+        FavoritesAdapter adapter = new FavoritesAdapter(getMainActivity(), Favorites.translate_text, Favorites.translated_text, Favorites.lang_lang);
+        recyclerView.setAdapter(adapter);
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
+                ((LinearLayoutManager)recyclerView.getLayoutManager()).getOrientation()));
+        recyclerView.getLayoutManager().onRestoreInstanceState(state);
 
         return view;
     }
 
     @Override
-    public void onPause() {
-        state = listView.onSaveInstanceState();
-        super.onPause();
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        state = recyclerView.getLayoutManager().onSaveInstanceState();
     }
 
     public MainActivity getMainActivity(){

@@ -4,13 +4,17 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.Toast;
 
-import com.alesk.translation.Adapters.HistoryAdapter;
+import com.alesk.translation.Adapters.TranslatesAdapter;
 import com.alesk.translation.MainActivity;
 import com.alesk.translation.Models.History;
 import com.alesk.translation.Presenters.HistoryPresenter;
@@ -19,7 +23,7 @@ import com.alesk.translation.Views.HistoryView;
 
 public class HistoryFragment extends Fragment implements HistoryView {
     private HistoryPresenter mHistoryPresenter;
-    private ListView listView;
+    private RecyclerView recyclerView;
     private static Parcelable state;
 
     @Override
@@ -33,32 +37,37 @@ public class HistoryFragment extends Fragment implements HistoryView {
     }
 
     @Override
-    public void onViewCreated(final View view, Bundle bundle){
-        super.onViewCreated(view, bundle);
-        if(state != null)
-        listView.onRestoreInstanceState(state);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_history, container, false);
 
-        listView = (ListView) view.findViewById(R.id.history_list);
-        HistoryAdapter historyAdapter = new HistoryAdapter(getActivity(), History.translate_text, History.translated_text, History.lang_lang, History.fav);
-        listView.setAdapter(historyAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        Toolbar toolbar = view.findViewById(R.id.history_toolbar);
+        toolbar.inflateMenu(R.menu.history_menu);
+
+        recyclerView = view.findViewById(R.id.history_list);
+        final TranslatesAdapter historyAdapter = new TranslatesAdapter(getMainActivity(), History.translate_text, History.translated_text, History.lang_lang, History.fav);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(historyAdapter);
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
+                ((LinearLayoutManager)recyclerView.getLayoutManager()).getOrientation()));
+        recyclerView.getLayoutManager().onRestoreInstanceState(state);
+
+        toolbar.getMenu().getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mHistoryPresenter.onItemClick(position);
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                mHistoryPresenter.clearHistory();
+                historyAdapter.notifyDataSetChanged();
+                Toast.makeText(getContext(), "История очищена", Toast.LENGTH_SHORT).show();
+                return false;
             }
         });
 
         return view;
     }
 
-    public void onPause(){
-        state = listView.onSaveInstanceState();
-        super.onPause();
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        state = recyclerView.getLayoutManager().onSaveInstanceState();
     }
 
     public MainActivity getMainActivity(){
