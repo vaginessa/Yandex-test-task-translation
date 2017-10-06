@@ -31,6 +31,7 @@ import javax.net.ssl.HttpsURLConnection;
  */
 
 public class Translator {
+    private static final String API_KEY = "trnsl.1.1.20170421T155302Z.72626cd8e3e77068.a727cb302d6818222e7afcfa360f4d51efe2f25d";
     public ArrayList<String> langs_from = new ArrayList<>();
     public ArrayList<String> langs = new ArrayList<>();
     private static ArrayList<String> code_langs = new ArrayList<>();
@@ -177,8 +178,6 @@ public class Translator {
                     callBack.onSuccessTranslate();
                     return null;
                 }
-                String baseURL = "https://translate.yandex.net/api/v1.5/tr.json/translate?";
-                String API_key = "trnsl.1.1.20170421T155302Z.72626cd8e3e77068.a727cb302d6818222e7afcfa360f4d51efe2f25d";
                 String to_translate = URLEncoder.encode(text[0], "UTF-8");
                 String lang;
                 if(lang_from_index == 0) {
@@ -187,7 +186,8 @@ public class Translator {
                     lang = code_langs.get(lang_from_index-1)+"-"+code_langs.get(target_lang_index);
                 }
                 if(isCancelled()) return null;
-                String result = request(baseURL + "key=" + API_key + "&text=" + to_translate + "&lang=" + lang);
+                String baseUrl = "https://translate.yandex.net/api/v1.5/tr.json/translate?";
+                String result = request(baseUrl + "key=" + API_KEY + "&text=" + to_translate + "&lang=" + lang);
                 parseJSON_translate(result);
             }catch(UnsupportedEncodingException e){
                 System.out.println(e.getMessage());
@@ -217,17 +217,16 @@ public class Translator {
     }
 
     private static String requestLangs(){
-        String baseURL = "https://translate.yandex.net/api/v1.5/tr.json/getLangs?";
-        String API_key = "trnsl.1.1.20170421T155302Z.72626cd8e3e77068.a727cb302d6818222e7afcfa360f4d51efe2f25d";
         String ui = "ru";
-        return request(baseURL+"key="+API_key+"&ui="+ui);
+        String baseUrl = "https://translate.yandex.net/api/v1.5/tr.json/getLangs?";
+        return request(baseUrl+"key="+API_KEY+"&ui="+ui);
     }
 
     private static String request(String url_string){
         try {
             URL url = new URL(url_string);
             HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-            con.setRequestMethod("POST");
+            con.setRequestMethod("GET");
             InputStream response = con.getInputStream();
             InputStreamReader reader = new InputStreamReader(response);
             char[] buffer = new char[256];
